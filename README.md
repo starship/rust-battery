@@ -3,7 +3,7 @@
 [![Latest Version](https://img.shields.io/crates/v/starship-battery.svg)](https://crates.io/crates/starship-battery)
 [![Latest Version](https://docs.rs/starship-battery/badge.svg)](https://docs.rs/starship-battery)
 [![Build Status](https://github.com/starship/rust-battery/workflows/Continuous%20integration/badge.svg)](https://github.com/starship/starship-battery/actions?workflow=Continuous+integration)
-![Minimum rustc version](https://img.shields.io/badge/rustc-1.36+-yellow.svg)
+![Minimum rustc version](https://img.shields.io/badge/rustc-1.46+-yellow.svg)
 ![ISC licensed](https://img.shields.io/badge/license-ISC-blue.svg)
 
 > Rust crate providing cross-platform information about the notebook batteries.
@@ -44,7 +44,7 @@ might be automatically rejected by Apple based on that fact. Use it on your own 
 
 ## Install
 
-As a prerequisite, `battery` crate requires at least Rustc version **1.36** or greater.
+As a prerequisite, `battery` crate requires at least Rustc version **1.46** or greater.
 
 Add the following line into a `Cargo.toml`:
 
