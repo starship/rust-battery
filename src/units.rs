@@ -7,11 +7,11 @@
 //! instead of the default `joules`, you will need the measurement unit from the corresponding module:
 //!
 //! ```edition2018
-//! # use battery::Result;
-//! use battery::units::energy::watt_hour;
+//! # use starship_battery::Result;
+//! use starship_battery::units::energy::watt_hour;
 //!
 //! # fn main() -> Result<()> {
-//! for bat in battery::Manager::new()?.batteries()? {
+//! for bat in starship_battery::Manager::new()?.batteries()? {
 //!     println!("Energy: {} Wh", bat?.energy().get::<watt_hour>());
 //! }
 //! # Ok(())
@@ -21,11 +21,11 @@
 //! Same thing applies to other units (temperature is stored in Kelvins):
 //!
 //! ```edition2018
-//! # use battery::Result;
-//! use battery::units::thermodynamic_temperature::degree_celsius;
+//! # use starship_battery::Result;
+//! use starship_battery::units::thermodynamic_temperature::degree_celsius;
 //!
 //! # fn main() -> Result<()> {
-//! for bat in battery::Manager::new()?.batteries()? {
+//! for bat in starship_battery::Manager::new()?.batteries()? {
 //!     if let Some(value) = bat?.temperature() {
 //!         println!("Temperature: {} °C", value.get::<degree_celsius>());
 //!     }
@@ -37,11 +37,11 @@
 //! percents:
 //!
 //! ```edition2018
-//! # use battery::Result;
-//! use battery::units::ratio::percent;
+//! # use starship_battery::Result;
+//! use starship_battery::units::ratio::percent;
 //!
 //! # fn main() -> Result<()> {
-//! for bat in battery::Manager::new()?.batteries()? {
+//! for bat in starship_battery::Manager::new()?.batteries()? {
 //!     println!("State of charge: {} %", bat?.state_of_charge().get::<percent>());
 //! }
 //! # Ok(())
@@ -51,13 +51,13 @@
 //! or time:
 //!
 //! ```edition2018
-//! # use battery::Result;
+//! # use starship_battery::Result;
 //! use std::time::Duration;
 //!
-//! use battery::units::time::nanosecond;
+//! use starship_battery::units::time::nanosecond;
 //!
 //! # fn main() -> Result<()> {
-//! for bat in battery::Manager::new()?.batteries()? {
+//! for bat in starship_battery::Manager::new()?.batteries()? {
 //!     if let Some(value) = bat?.time_to_full() {
 //!         let duration = Duration::from_nanos(value.get::<nanosecond>() as u64);
 //!     }

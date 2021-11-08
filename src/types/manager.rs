@@ -13,7 +13,7 @@ use crate::{Batteries, Battery, Result};
 /// # Example
 ///
 /// ```edition2018
-/// # use battery::{Result, Manager};
+/// # use starship_battery::{Result, Manager};
 /// # fn main() -> Result<()> {
 /// for battery in Manager::new()?.batteries()? {
 ///     println!("{:#?}", battery?);

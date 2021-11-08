@@ -1,4 +1,4 @@
-extern crate battery;
+extern crate starship_battery as battery;
 
 use std::io;
 use std::thread;
