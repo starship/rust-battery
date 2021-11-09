@@ -1,3 +1,4 @@
+#![allow(unaligned_references)]
 #![allow(clippy::cast_ptr_alignment)]
 
 use std::default::Default;
