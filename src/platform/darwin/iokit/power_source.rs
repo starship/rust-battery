@@ -49,19 +49,19 @@ pub struct InstantData {
 impl InstantData {
     pub fn try_from(props: &Properties) -> Result<InstantData> {
         Ok(Self {
-            fully_charged: Self::get_bool(&props, FULLY_CHARGED_KEY).ok(),
-            external_connected: Self::get_bool(&props, EXTERNAL_CONNECTED_KEY)?,
-            is_charging: Self::get_bool(&props, IS_CHARGING_KEY)?,
-            voltage: millivolt!(Self::get_u32(&props, VOLTAGE_KEY)?),
-            amperage: milliampere!(Self::get_i32(&props, AMPERAGE_KEY)?.abs()),
-            design_capacity: Self::get_u32(&props, DESIGN_CAPACITY_KEY).ok().map(|capacity| milliampere_hour!(capacity)),
-            max_capacity: milliampere_hour!(Self::get_u32(&props, MAX_CAPACITY_KEY)?),
-            current_capacity: milliampere_hour!(Self::get_u32(&props, CURRENT_CAPACITY_KEY)?),
-            temperature: Self::get_i32(&props, TEMPERATURE_KEY)
+            fully_charged: Self::get_bool(props, FULLY_CHARGED_KEY).ok(),
+            external_connected: Self::get_bool(props, EXTERNAL_CONNECTED_KEY)?,
+            is_charging: Self::get_bool(props, IS_CHARGING_KEY)?,
+            voltage: millivolt!(Self::get_u32(props, VOLTAGE_KEY)?),
+            amperage: milliampere!(Self::get_i32(props, AMPERAGE_KEY)?.abs()),
+            design_capacity: Self::get_u32(props, DESIGN_CAPACITY_KEY).ok().map(|capacity| milliampere_hour!(capacity)),
+            max_capacity: milliampere_hour!(Self::get_u32(props, MAX_CAPACITY_KEY)?),
+            current_capacity: milliampere_hour!(Self::get_u32(props, CURRENT_CAPACITY_KEY)?),
+            temperature: Self::get_i32(props, TEMPERATURE_KEY)
                 .map(|value| celsius!(value as f32 / 100.0))
                 .ok(),
-            cycle_count: Self::get_u32(&props, CYCLE_COUNT_KEY).ok(),
-            time_remaining: Self::get_i32(&props, TIME_REMAINING_KEY)
+            cycle_count: Self::get_u32(props, CYCLE_COUNT_KEY).ok(),
+            time_remaining: Self::get_i32(props, TIME_REMAINING_KEY)
                 .ok()
                 .and_then(|val| if val == i32::MAX { None } else { Some(minute!(val)) }),
         })
@@ -192,7 +192,7 @@ impl DataSource for PowerSource {
     }
 
     fn design_capacity(&self) -> ElectricCharge {
-        self.data.design_capacity.unwrap_or(ElectricCharge::default())
+        self.data.design_capacity.unwrap_or_default()
     }
 
     fn max_capacity(&self) -> ElectricCharge {
