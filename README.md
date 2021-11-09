@@ -2,7 +2,7 @@
 
 [![Latest Version](https://img.shields.io/crates/v/starship-battery.svg)](https://crates.io/crates/starship-battery)
 [![Latest Version](https://docs.rs/starship-battery/badge.svg)](https://docs.rs/starship-battery)
-[![Build Status](https://github.com/starship/rust-battery/workflows/Continuous%20integration/badge.svg)](https://github.com/starship/starship-battery/actions?workflow=Continuous+integration)
+[![Build Status](https://github.com/starship/rust-battery/workflows/Continuous%20integration/badge.svg)](https://github.com/starship/rust-battery/actions?workflow=Continuous+integration)
 ![Minimum rustc version](https://img.shields.io/badge/rustc-1.46+-yellow.svg)
 ![ISC licensed](https://img.shields.io/badge/license-ISC-blue.svg)
 
