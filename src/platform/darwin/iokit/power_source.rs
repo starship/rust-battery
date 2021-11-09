@@ -54,7 +54,9 @@ impl InstantData {
             is_charging: Self::get_bool(props, IS_CHARGING_KEY)?,
             voltage: millivolt!(Self::get_u32(props, VOLTAGE_KEY)?),
             amperage: milliampere!(Self::get_i32(props, AMPERAGE_KEY)?.abs()),
-            design_capacity: Self::get_u32(props, DESIGN_CAPACITY_KEY).ok().map(|capacity| milliampere_hour!(capacity)),
+            design_capacity: Self::get_u32(props, DESIGN_CAPACITY_KEY)
+                .ok()
+                .map(|capacity| milliampere_hour!(capacity)),
             max_capacity: milliampere_hour!(Self::get_u32(props, MAX_CAPACITY_KEY)?),
             current_capacity: milliampere_hour!(Self::get_u32(props, CURRENT_CAPACITY_KEY)?),
             temperature: Self::get_i32(props, TEMPERATURE_KEY)

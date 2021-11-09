@@ -51,8 +51,10 @@ impl DeviceIterator {
     }
 
     fn get_interface_data(&self) -> io::Result<setupapi::SP_DEVICE_INTERFACE_DATA> {
-        let mut data = setupapi::SP_DEVICE_INTERFACE_DATA::default();
-        data.cbSize = mem::size_of::<setupapi::SP_DEVICE_INTERFACE_DATA>() as u32;
+        let mut data = setupapi::SP_DEVICE_INTERFACE_DATA {
+            cbSize: mem::size_of::<setupapi::SP_DEVICE_INTERFACE_DATA>() as u32,
+            ..Default::default()
+        };
         let result = unsafe {
             setupapi::SetupDiEnumDeviceInterfaces(
                 self.device,
