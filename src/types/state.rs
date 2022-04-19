@@ -8,7 +8,8 @@ use serde::{Deserialize, Serialize};
 ///
 /// Unknown can mean either controller returned unknown,
 /// or not able to retrieve state due to some error.
-#[derive(Debug, Eq, PartialEq, Copy, Clone, Deserialize, Serialize)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Deserialize, Serialize, schemars::JsonSchema)]
+#[serde(rename_all = "lowercase")]
 pub enum State {
     Unknown,
     Charging,
@@ -18,6 +19,7 @@ pub enum State {
 
     // Awaiting for https://github.com/rust-lang/rust/issues/44109
     #[doc(hidden)]
+    #[serde(skip)]
     __Nonexhaustive,
 }
 
