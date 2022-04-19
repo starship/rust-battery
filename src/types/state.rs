@@ -2,11 +2,13 @@ use std::fmt;
 use std::io;
 use std::str;
 
+use serde::{Deserialize, Serialize};
+
 /// Possible battery state values.
 ///
 /// Unknown can mean either controller returned unknown,
 /// or not able to retrieve state due to some error.
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Deserialize, Serialize)]
 pub enum State {
     Unknown,
     Charging,
