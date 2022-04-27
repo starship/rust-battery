@@ -19,11 +19,6 @@ pub enum State {
     Discharging,
     Empty,
     Full,
-
-    // Awaiting for https://github.com/rust-lang/rust/issues/44109
-    #[doc(hidden)]
-    #[serde(skip)]
-    __Nonexhaustive,
 }
 
 impl<'de> Deserialize<'de> for State {
@@ -59,7 +54,6 @@ impl fmt::Display for State {
             State::Discharging => "discharging",
             State::Empty => "empty",
             State::Full => "full",
-            _ => "unknown",
         };
 
         write!(f, "{}", display)
