@@ -10,7 +10,8 @@ use serde::de::{Error, Unexpected};
 ///
 /// Unknown can mean either controller returned unknown,
 /// or not able to retrieve state due to some error.
-#[derive(Debug, Eq, PartialEq, Copy, Clone, Serialize, schemars::JsonSchema)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Serialize)]
+#[cfg_attr(feature = "config-schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum State {
     Unknown,
