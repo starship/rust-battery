@@ -23,18 +23,12 @@ impl Default for BATTERY_QUERY_INFORMATION {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct BatteryQueryInformation(BATTERY_QUERY_INFORMATION);
 
 impl BatteryQueryInformation {
     pub fn battery_tag(&self) -> ntdef::ULONG {
         self.0.BatteryTag
-    }
-}
-
-impl Default for BatteryQueryInformation {
-    fn default() -> Self {
-        BatteryQueryInformation(BATTERY_QUERY_INFORMATION::default())
     }
 }
 

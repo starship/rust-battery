@@ -41,14 +41,8 @@ impl Default for BATTERY_STATUS {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BatteryStatus(BATTERY_STATUS);
-
-impl Default for BatteryStatus {
-    fn default() -> Self {
-        BatteryStatus(BATTERY_STATUS::default())
-    }
-}
 
 impl ops::Deref for BatteryStatus {
     type Target = BATTERY_STATUS;

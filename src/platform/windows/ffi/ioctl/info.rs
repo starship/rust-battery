@@ -33,14 +33,8 @@ impl Default for BATTERY_INFORMATION {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BatteryInformation(BATTERY_INFORMATION);
-
-impl Default for BatteryInformation {
-    fn default() -> Self {
-        BatteryInformation(BATTERY_INFORMATION::default())
-    }
-}
 
 impl ops::Deref for BatteryInformation {
     type Target = BATTERY_INFORMATION;
