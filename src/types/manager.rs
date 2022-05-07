@@ -32,9 +32,7 @@ impl Manager {
     pub fn new() -> Result<Manager> {
         let inner = PlatformManager::new()?;
 
-        Ok(Manager {
-            inner: Rc::new(inner),
-        })
+        Ok(Manager { inner: Rc::new(inner) })
     }
 
     /// Returns an iterator over available batteries.

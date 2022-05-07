@@ -118,7 +118,7 @@ impl AcpiBif {
             None => return None,
         };
 
-        match CStr::from_bytes_with_nul(&striped) {
+        match CStr::from_bytes_with_nul(striped) {
             Ok(cstr) => Some(cstr.to_string_lossy().to_string()),
             Err(_) => None,
         }
@@ -221,7 +221,11 @@ impl AcpiDevice {
         };
         let info = unsafe { arg.bif };
 
-        if info.is_valid() { Ok(Some(info)) } else { Ok(None) }
+        if info.is_valid() {
+            Ok(Some(info))
+        } else {
+            Ok(None)
+        }
     }
 
     /// # Returns
@@ -237,7 +241,11 @@ impl AcpiDevice {
         };
         let info = unsafe { arg.bst };
 
-        if info.is_valid() { Ok(Some(info)) } else { Ok(None) }
+        if info.is_valid() {
+            Ok(Some(info))
+        } else {
+            Ok(None)
+        }
     }
 }
 
