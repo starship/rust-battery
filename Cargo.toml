@@ -12,13 +12,13 @@ license = "ISC"
 build = "build.rs"
 
 [features]
-config-schema = ["schemars"]
+config-schema = ["schemars", "serde"]
 
 [dependencies]
 cfg-if = "1.0"
 num-traits = { version = "0.2", default_features = false }
 uom = { version = "0.30", features = ["autoconvert", "f32", "si"] }
-serde = { version = "1.0.136", features = ["derive"] }
+serde = { version = "1.0.136", features = ["derive"], optional = true }
 schemars = { version = "0.8.8", optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]

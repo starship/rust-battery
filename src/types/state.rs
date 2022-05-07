@@ -1,30 +1,24 @@
 use std::fmt;
 use std::io;
 use std::str;
-use std::str::FromStr;
-
-use serde::{Deserialize, Deserializer, Serialize};
-use serde::de::{Error, Unexpected};
 
 /// Possible battery state values.
 ///
 /// Unknown can mean either controller returned unknown,
 /// or not able to retrieve state due to some error.
-#[derive(Debug, Eq, PartialEq, Copy, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[cfg_attr(feature = "config-schema", derive(schemars::JsonSchema))]
-#[serde(rename_all = "lowercase")]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize, serde::Deserialize),
+    serde(rename_all = "lowercase")
+)]
 pub enum State {
     Unknown,
     Charging,
     Discharging,
     Empty,
     Full,
-}
-
-impl<'de> Deserialize<'de> for State {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de> {
-        String::deserialize(deserializer).and_then(|s| State::from_str(&s).map_err(|_| D::Error::invalid_value(Unexpected::Str(&s), &"State")))
-    }
 }
 
 impl str::FromStr for State {
