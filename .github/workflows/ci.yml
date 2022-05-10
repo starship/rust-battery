@@ -48,14 +48,14 @@ jobs:
       - uses: Swatinem/rust-cache@v1.3.0
 
       - name: Build
-        uses: actions-rs/cargo@v1.0.1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: build
           args: --target ${{ matrix.target }} --all-features --all-targets
 
       - name: Run tests
-        uses: actions-rs/cargo@v1.0.1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: test
@@ -63,7 +63,7 @@ jobs:
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
-        uses: actions-rs/cargo@v1.0.1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: clippy
@@ -111,7 +111,7 @@ jobs:
       - uses: Swatinem/rust-cache@v1.3.0
 
       - name: Build
-        uses: actions-rs/cargo@v1.0.1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: build
@@ -119,7 +119,7 @@ jobs:
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
-        uses: actions-rs/cargo@v1.0.1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: clippy
