@@ -40,10 +40,7 @@ impl BatteryIterator for PowerIterator {
 
     fn new(manager: Rc<Self::Manager>) -> Result<Self> {
         let inner = ffi::DeviceIterator::new()?;
-        Ok(Self {
-            manager,
-            inner,
-        })
+        Ok(Self { manager, inner })
     }
 }
 

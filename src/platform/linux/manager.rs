@@ -5,8 +5,7 @@ use super::iterator::SysFsIterator;
 use crate::platform::traits::*;
 use crate::Result;
 
-#[allow(clippy::redundant_static_lifetimes)]
-static SYSFS_ROOT: &'static str = "/sys/class/power_supply";
+static SYSFS_ROOT: &str = "/sys/class/power_supply";
 
 #[derive(Debug)]
 pub struct SysFsManager {

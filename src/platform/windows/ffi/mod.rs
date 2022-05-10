@@ -67,7 +67,11 @@ impl DeviceIterator {
         };
 
         // TODO: Add trace
-        if result == 0 { Err(get_last_error()) } else { Ok(data) }
+        if result == 0 {
+            Err(get_last_error())
+        } else {
+            Ok(data)
+        }
     }
 
     fn get_interface_detail(&self, data: &mut setupapi::SP_DEVICE_INTERFACE_DATA) -> io::Result<InterfaceDetailData> {
@@ -228,7 +232,11 @@ impl DeviceHandle {
             )
         };
 
-        if res == 0 { Err(get_last_error()) } else { Ok(out) }
+        if res == 0 {
+            Err(get_last_error())
+        } else {
+            Ok(out)
+        }
     }
 
     pub fn status(&mut self) -> io::Result<ioctl::BatteryStatus> {
@@ -253,7 +261,11 @@ impl DeviceHandle {
             )
         };
 
-        if res == 0 { Err(get_last_error()) } else { Ok(out) }
+        if res == 0 {
+            Err(get_last_error())
+        } else {
+            Ok(out)
+        }
     }
 
     // 10ths of a degree Kelvin (or decikelvin)
@@ -280,7 +292,11 @@ impl DeviceHandle {
             )
         };
 
-        if res == 0 { Err(get_last_error()) } else { Ok(out) }
+        if res == 0 {
+            Err(get_last_error())
+        } else {
+            Ok(out)
+        }
     }
 
     pub fn device_name(&mut self) -> io::Result<String> {

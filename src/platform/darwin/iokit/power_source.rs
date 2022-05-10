@@ -1,5 +1,3 @@
-#![allow(clippy::redundant_static_lifetimes)]
-
 use std::fmt;
 use std::i32;
 
@@ -16,20 +14,20 @@ use crate::{Error, Result};
 
 type Properties = CFDictionary<CFString, CFType>;
 
-static FULLY_CHARGED_KEY: &'static str = "FullyCharged";
-static EXTERNAL_CONNECTED_KEY: &'static str = "ExternalConnected";
-static IS_CHARGING_KEY: &'static str = "IsCharging";
-static VOLTAGE_KEY: &'static str = "Voltage";
-static AMPERAGE_KEY: &'static str = "Amperage";
-static DESIGN_CAPACITY_KEY: &'static str = "DesignCapacity";
-static MAX_CAPACITY_KEY: &'static str = "MaxCapacity";
-static CURRENT_CAPACITY_KEY: &'static str = "CurrentCapacity";
-static TEMPERATURE_KEY: &'static str = "Temperature";
-static CYCLE_COUNT_KEY: &'static str = "CycleCount";
-static TIME_REMAINING_KEY: &'static str = "TimeRemaining";
-static MANUFACTURER_KEY: &'static str = "Manufacturer";
-static DEVICE_NAME_KEY: &'static str = "DeviceName";
-static BATTERY_SERIAL_NUMBER_KEY: &'static str = "BatterySerialNumber";
+static FULLY_CHARGED_KEY: &str = "FullyCharged";
+static EXTERNAL_CONNECTED_KEY: &str = "ExternalConnected";
+static IS_CHARGING_KEY: &str = "IsCharging";
+static VOLTAGE_KEY: &str = "Voltage";
+static AMPERAGE_KEY: &str = "Amperage";
+static DESIGN_CAPACITY_KEY: &str = "DesignCapacity";
+static MAX_CAPACITY_KEY: &str = "MaxCapacity";
+static CURRENT_CAPACITY_KEY: &str = "CurrentCapacity";
+static TEMPERATURE_KEY: &str = "Temperature";
+static CYCLE_COUNT_KEY: &str = "CycleCount";
+static TIME_REMAINING_KEY: &str = "TimeRemaining";
+static MANUFACTURER_KEY: &str = "Manufacturer";
+static DEVICE_NAME_KEY: &str = "DeviceName";
+static BATTERY_SERIAL_NUMBER_KEY: &str = "BatterySerialNumber";
 
 #[derive(Debug)]
 pub struct InstantData {
@@ -63,9 +61,13 @@ impl InstantData {
                 .map(|value| celsius!(value as f32 / 100.0))
                 .ok(),
             cycle_count: Self::get_u32(props, CYCLE_COUNT_KEY).ok(),
-            time_remaining: Self::get_i32(props, TIME_REMAINING_KEY)
-                .ok()
-                .and_then(|val| if val == i32::MAX { None } else { Some(minute!(val)) }),
+            time_remaining: Self::get_i32(props, TIME_REMAINING_KEY).ok().and_then(|val| {
+                if val == i32::MAX {
+                    None
+                } else {
+                    Some(minute!(val))
+                }
+            }),
         })
     }
 

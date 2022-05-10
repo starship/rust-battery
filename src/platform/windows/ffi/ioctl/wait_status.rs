@@ -23,14 +23,8 @@ impl Default for BATTERY_WAIT_STATUS {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BatteryWaitStatus(BATTERY_WAIT_STATUS);
-
-impl Default for BatteryWaitStatus {
-    fn default() -> Self {
-        BatteryWaitStatus(BATTERY_WAIT_STATUS::default())
-    }
-}
 
 impl ops::Deref for BatteryWaitStatus {
     type Target = BATTERY_WAIT_STATUS;
