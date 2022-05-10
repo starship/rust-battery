@@ -14,7 +14,7 @@
 //! ## Examples
 //!
 //! For a quick example see the [Manager](struct.Manager.html) type documentation
-//! or [`simple.rs`](https://github.com/svartalf/rust-battery/blob/master/battery/examples/simple.rs)
+//! or [`simple.rs`](https://github.com/starship/rust-battery/blob/main/battery/examples/simple.rs)
 //! file in the `examples/` folder.
 //!
 //! [battop](https://crates.io/crates/battop) crate is using this library as a knowledge source,

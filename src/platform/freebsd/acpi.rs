@@ -1,5 +1,5 @@
-// https://github.com/freebsd/freebsd/blob/master/sys/dev/acpica/acpiio.h
-// https://github.com/freebsd/freebsd/blob/master/sys/dev/acpica/acpi_battery.c
+// https://github.com/freebsd/freebsd-src/blob/main/sys/dev/acpica/acpiio.h
+// https://github.com/freebsd/freebsd-src/blob/main/sys/dev/acpica/acpi_battery.c
 
 use std::default::Default;
 use std::ffi::CStr;
