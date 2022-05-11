@@ -2,125 +2,125 @@ on: [push, pull_request]
 
 name: Continuous integration
 
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  RUST_BACKTRACE: short
+  RUSTUP_MAX_RETRIES: 10
+
 jobs:
-  linux:
-    name: Linux
-    runs-on: ubuntu-latest
+  test:
+    name: Test
     strategy:
       matrix:
         toolchain:
           - stable
-          - 1.46.0  # MSRV
-        arch:
+          - 1.46.0 # MSRV
+        target:
           - i686-unknown-linux-gnu
           - x86_64-unknown-linux-gnu
-    steps:
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.toolchain }}
-          target: ${{ matrix.arch }}
-          override: true
-
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --target ${{ matrix.arch }}
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: test
-          args: --target ${{ matrix.arch }}
-
-      - name: Run clippy
-        if: matrix.toolchain == 'stable'
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
-
-  windows:
-    name: Windows
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        toolchain:
-          - stable
-          - 1.46.0  # MSRV
-        arch:
+          - x86_64-unknown-linux-musl
           - i686-pc-windows-msvc
           - x86_64-pc-windows-msvc
+          - x86_64-apple-darwin
+        include:
+          - target: i686-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: i686-pc-windows-msvc
+            os: windows-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3.0.2
+      - uses: actions-rs/toolchain@v1.0.7
         with:
           toolchain: ${{ matrix.toolchain }}
-          target: ${{ matrix.arch }}
+          target: ${{ matrix.target }}
           override: true
 
+      - uses: Swatinem/rust-cache@v1.4.0
+
       - name: Build
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.arch }}
+          args: --target ${{ matrix.target }} --all-features --all-targets
 
       - name: Run tests
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: test
-          args: --target ${{ matrix.arch }}
+          args: --target ${{ matrix.target }} --all-features --all-targets
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.target }} -- -D clippy::all
 
-  macos:
-    name: macOS
-    runs-on: macOS-latest
+  build_only:
+    name: Test [Build only]
     strategy:
       matrix:
         toolchain:
           - stable
-          - 1.46.0  # MSRV
-        arch:
-          - x86_64-apple-darwin
+          - 1.46.0 # MSRV
+        target:
+          - x86_64-unknown-freebsd
+          - aarch64-unknown-linux-gnu
+          - aarch64-unknown-linux-musl
+          - aarch64-pc-windows-msvc
+          - aarch64-apple-darwin
+        include:
+          - target: x86_64-unknown-freebsd
+            os: ubuntu-latest
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+        exclude:
+          - target: aarch64-apple-darwin
+            toolchain: 1.46.0
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3.0.2
+      # FreeBSD requires latest cross
+      - run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - uses: actions-rs/toolchain@v1.0.7
         with:
           toolchain: ${{ matrix.toolchain }}
-          target: ${{ matrix.arch }}
+          target: ${{ matrix.target }}
           override: true
 
+      - uses: Swatinem/rust-cache@v1.4.0
+
       - name: Build
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.arch }}
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: test
-          args: --target ${{ matrix.arch }}
+          args: --target ${{ matrix.target }}
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.target }} -- -D clippy::all

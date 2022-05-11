@@ -14,7 +14,7 @@
 //! ## Examples
 //!
 //! For a quick example see the [Manager](struct.Manager.html) type documentation
-//! or [`simple.rs`](https://github.com/svartalf/rust-battery/blob/master/battery/examples/simple.rs)
+//! or [`simple.rs`](https://github.com/starship/rust-battery/blob/main/battery/examples/simple.rs)
 //! file in the `examples/` folder.
 //!
 //! [battop](https://crates.io/crates/battop) crate is using this library as a knowledge source,
@@ -23,7 +23,6 @@
 #![deny(unused)]
 #![deny(unstable_features)]
 #![deny(bare_trait_objects)]
-#![allow(clippy::manual_non_exhaustive)] // MSRV is 1.36
 #![doc(html_root_url = "https://docs.rs/starship-battery/0.7.9")]
 
 #[macro_use]

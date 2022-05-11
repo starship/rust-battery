@@ -5,6 +5,7 @@ use crate::Error;
 
 /// Possible battery technologies.
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[non_exhaustive]
 pub enum Technology {
     Unknown,
     LithiumIon,
@@ -15,10 +16,6 @@ pub enum Technology {
     NickelZinc,
     LithiumIronPhosphate,
     RechargeableAlkalineManganese,
-
-    // Awaiting for https://github.com/rust-lang/rust/issues/44109
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl str::FromStr for Technology {
@@ -59,7 +56,6 @@ impl fmt::Display for Technology {
             Technology::NickelZinc => "nickel-zinc",
             Technology::LithiumIronPhosphate => "lithium-iron-phosphate",
             Technology::RechargeableAlkalineManganese => "rechargeable-alkaline-manganese",
-            _ => "unknown",
         };
 
         write!(f, "{}", display)

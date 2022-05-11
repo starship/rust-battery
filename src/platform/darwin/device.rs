@@ -107,9 +107,7 @@ where
     T: DataSource,
 {
     fn from(ds: T) -> IoKitDevice {
-        IoKitDevice {
-            source: Box::new(ds),
-        }
+        IoKitDevice { source: Box::new(ds) }
     }
 }
 

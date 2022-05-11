@@ -25,7 +25,7 @@ cfg_if! {
         pub type Device = freebsd::IoCtlDevice;
     } else {
         compile_error!("Support for this target OS is not implemented yet!\n \
-            You may want to create an issue: https://github.com/svartalf/rust-battery/issues/new");
+            You may want to create an issue: https://github.com/starship/rust-battery/issues/new");
     }
 }
 

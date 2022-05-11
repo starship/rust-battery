@@ -1,4 +1,4 @@
-use std::mem;
+use std::mem::{self, MaybeUninit};
 use std::ops::{Deref, DerefMut};
 
 use core_foundation::base::{kCFAllocatorDefault, kCFNull, mach_port_t, CFType, TCFType};
@@ -57,17 +57,16 @@ impl IoObject {
     /// untyped dict here.
     pub fn properties(&self) -> Result<CFDictionary<CFString, CFType>> {
         unsafe {
-            // MSRV is 1.32 and `std::mem::MaybeUninit` appeared only at 1.36
-            // TODO: Switch to `MaybeUninit` as soon as MSRV will be bumped.
-            #[allow(deprecated)]
-            let mut props: CFMutableDictionaryRef = mem::uninitialized();
+            let mut props = MaybeUninit::<CFMutableDictionaryRef>::zeroed();
 
             kern_try!(sys::IORegistryEntryCreateCFProperties(
                 self.0,
-                &mut props,
+                props.as_mut_ptr(),
                 kCFAllocatorDefault,
                 0
             ));
+
+            let props = props.assume_init();
 
             Ok(CFMutableDictionary::wrap_under_create_rule(props).to_immutable())
         }

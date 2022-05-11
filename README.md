@@ -73,17 +73,8 @@ fn main() -> Result<(), battery::Error> {
 }
 ```
 
-See the `battery/examples/` folder in the [repository](https://github.com/svartalf/rust-battery/blob/master/battery/examples/simple.rs)
+See the `battery/examples/` folder in the [repository](https://github.com/starship/rust-battery/blob/main/battery/examples/simple.rs)
 for additional examples.
-
-## FFI bindings
-
-Experimental [battery-ffi](https://crates.io/crates/battery-ffi) crate provides the FFI bindings to the `battery` crate,
-so it can be used with other languages, such as C, Python or NodeJS.
-
-Check its [README](https://github.com/svartalf/rust-battery/tree/master/battery-ffi)
-and [documentation](https://docs.rs/battery-ffi) for details.
-
 ## Users
 
 This an incomplete list of the `battery` crate users. If you are using it too,
