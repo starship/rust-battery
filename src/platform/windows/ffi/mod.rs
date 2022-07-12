@@ -1,4 +1,3 @@
-#![allow(unaligned_references)]
 #![allow(clippy::cast_ptr_alignment)]
 
 use std::default::Default;
@@ -117,7 +116,10 @@ impl DeviceIterator {
     }
 
     fn get_handle(&self, pdidd: &InterfaceDetailData) -> io::Result<Handle> {
-        let device_path = unsafe { (***pdidd).DevicePath.as_ptr() };
+        let device_path = unsafe {
+            let dp = std::ptr::addr_of!((***pdidd).DevicePath);
+            (*dp).as_ptr()
+        };
         let file = unsafe {
             fileapi::CreateFileW(
                 device_path,
@@ -147,7 +149,7 @@ impl DeviceIterator {
                 ioctl::IOCTL_BATTERY_QUERY_TAG,
                 &mut wait_timeout as *mut _ as minwindef::LPVOID,
                 mem::size_of::<minwindef::DWORD>() as minwindef::DWORD,
-                &mut query.BatteryTag as *mut _ as minwindef::LPVOID,
+                std::ptr::addr_of_mut!(query.BatteryTag) as minwindef::LPVOID,
                 mem::size_of::<ntdef::ULONG>() as minwindef::DWORD,
                 &mut bytes_returned as *mut _,
                 ntdef::NULL as minwinbase::LPOVERLAPPED,
