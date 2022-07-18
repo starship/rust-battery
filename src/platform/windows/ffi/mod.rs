@@ -1,5 +1,3 @@
-#![allow(clippy::cast_ptr_alignment)]
-
 use std::default::Default;
 use std::io;
 use std::iter;
@@ -120,6 +118,7 @@ impl DeviceIterator {
             let dp = std::ptr::addr_of!((***pdidd).DevicePath);
             (*dp).as_ptr()
         };
+
         let file = unsafe {
             fileapi::CreateFileW(
                 device_path,
@@ -142,6 +141,7 @@ impl DeviceIterator {
         let mut query = ioctl::BatteryQueryInformation::default();
         let mut wait_timeout: minwindef::DWORD = 0;
         let mut bytes_returned: minwindef::DWORD = 0;
+        let mut battery_tag = { query.BatteryTag };
 
         let res = unsafe {
             ioapiset::DeviceIoControl(
@@ -149,13 +149,14 @@ impl DeviceIterator {
                 ioctl::IOCTL_BATTERY_QUERY_TAG,
                 &mut wait_timeout as *mut _ as minwindef::LPVOID,
                 mem::size_of::<minwindef::DWORD>() as minwindef::DWORD,
-                std::ptr::addr_of_mut!(query.BatteryTag) as minwindef::LPVOID,
+                &mut battery_tag as *mut _ as minwindef::LPVOID,
                 mem::size_of::<ntdef::ULONG>() as minwindef::DWORD,
                 &mut bytes_returned as *mut _,
                 ntdef::NULL as minwinbase::LPOVERLAPPED,
             )
         };
 
+        query.BatteryTag = battery_tag;
         if res == 0 || query.BatteryTag == 0 {
             return Err(get_last_error());
         }
