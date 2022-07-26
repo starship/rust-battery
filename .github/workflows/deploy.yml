@@ -23,6 +23,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: rust
+          bump-minor-pre-major: true
 
   # Publish starship-battery to Crates.io
   cargo_publish:
