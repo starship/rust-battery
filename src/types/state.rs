@@ -7,6 +7,12 @@ use std::str;
 /// Unknown can mean either controller returned unknown,
 /// or not able to retrieve state due to some error.
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[cfg_attr(feature = "config-schema", derive(schemars::JsonSchema))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize, serde::Deserialize),
+    serde(rename_all = "lowercase")
+)]
 pub enum State {
     Unknown,
     Charging,
