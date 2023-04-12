@@ -263,13 +263,7 @@ pub(crate) trait Bound: Sized {
 impl Bound for Ratio {
     #[inline]
     fn into_bounded(mut self) -> Self {
-        if self.value < 0.0 {
-            self.value = 0.0;
-        }
-
-        if self.value > 1.0 {
-            self.value = 1.0;
-        }
+        self.value = self.value.clamp(0.0, 1.0);
 
         self
     }

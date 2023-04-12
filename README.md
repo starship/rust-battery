@@ -3,24 +3,24 @@
 [![Latest Version](https://img.shields.io/crates/v/starship-battery.svg)](https://crates.io/crates/starship-battery)
 [![Latest Version](https://docs.rs/starship-battery/badge.svg)](https://docs.rs/starship-battery)
 [![Build Status](https://github.com/starship/rust-battery/workflows/Continuous%20integration/badge.svg)](https://github.com/starship/rust-battery/actions?workflow=Continuous+integration)
-![Minimum rustc version](https://img.shields.io/badge/rustc-1.46+-yellow.svg)
+![Minimum rustc version](https://img.shields.io/badge/rustc-1.54+-yellow.svg)
 ![ISC licensed](https://img.shields.io/badge/license-ISC-blue.svg)
 
 > Rust crate providing cross-platform information about the notebook batteries.
 
 ## Table of contents
 
- * [Overview](#overview)
- * [Supported platforms](#supported-platforms)
- * [Install](#install)
- * [Examples](#examples)
- * [FFI bindings](#ffi-bindings)
- * [Users](#users)
- * [License](#license)
- * [Donations](#donations)
- * [Contributors](#contributors)
- * [Backers](#backers)
- * [Sponsors](#sponsors)
+* [Overview](#overview)
+* [Supported platforms](#supported-platforms)
+* [Install](#install)
+* [Examples](#examples)
+* [FFI bindings](#ffi-bindings)
+* [Users](#users)
+* [License](#license)
+* [Donations](#donations)
+* [Contributors](#contributors)
+* [Backers](#backers)
+* [Sponsors](#sponsors)
 
 ## Overview
 
@@ -44,7 +44,7 @@ might be automatically rejected by Apple based on that fact. Use it on your own 
 
 ## Install
 
-As a prerequisite, `battery` crate requires at least Rustc version **1.46** or greater.
+As a prerequisite, `battery` crate requires at least Rustc version **1.54** or greater.
 
 Add the following line into a `Cargo.toml`:
 
@@ -75,6 +75,7 @@ fn main() -> Result<(), battery::Error> {
 
 See the `battery/examples/` folder in the [repository](https://github.com/starship/rust-battery/blob/main/battery/examples/simple.rs)
 for additional examples.
+
 ## Users
 
 This an incomplete list of the `battery` crate users. If you are using it too,

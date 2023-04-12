@@ -23,6 +23,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: rust
+          bump-minor-pre-major: true
 
   # Publish starship-battery to Crates.io
   cargo_publish:
@@ -32,7 +33,7 @@ jobs:
     if: ${{ needs.release_please.outputs.release_created == 'true' }}
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
 
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1.0.7
