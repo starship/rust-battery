@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0](https://github.com/starship/rust-battery/compare/v0.7.9...v0.8.0) (2023-04-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* rework ci & code cleanup
+* rework ci & code cleanup
+
+### Features
+
+* derive `serde` and `schemars` traits for `State` enum ([#2](https://github.com/starship/rust-battery/issues/2)) ([487ebc2](https://github.com/starship/rust-battery/commit/487ebc2f7fbd30c346c13f82a1f721fa0256d43a))
+
+
+### Bug Fixes
+
+* bump msrv ([26bea66](https://github.com/starship/rust-battery/commit/26bea66aea58ccfd8df6005a54c403bf89554b6d))
+* bump msrv ([bfcf16d](https://github.com/starship/rust-battery/commit/bfcf16db3297b05565b853e2dc19cdfd03c32986))
+* bump msrv further ([#27](https://github.com/starship/rust-battery/issues/27)) ([79f1359](https://github.com/starship/rust-battery/commit/79f1359b3d4ca2f3247f04b6f72a0ca2a6db5811))
+* replace `mach` with `mach2` fork ([#28](https://github.com/starship/rust-battery/issues/28)) ([ada2f1b](https://github.com/starship/rust-battery/commit/ada2f1b2ab0fd8c8c6bea7ff47e623d5fa0c94ea))
+
+
+### Code Refactoring
+
+* rework ci & code cleanup ([2330404](https://github.com/starship/rust-battery/commit/2330404d7b0f57be47f733905c735f96e866e401))
+* rework ci & code cleanup ([b507347](https://github.com/starship/rust-battery/commit/b507347036b237405e292c23f7ce50dfb4ab8e58))
+
 ## [0.7.9] - 2021-11-09
 
 - Update `nix` dependency version
