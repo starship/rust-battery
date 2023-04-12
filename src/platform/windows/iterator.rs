@@ -1,5 +1,5 @@
 use std::fmt;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::{ffi, PowerDevice, PowerManager};
 use crate::platform::traits::BatteryIterator;
@@ -7,7 +7,7 @@ use crate::Result;
 
 pub struct PowerIterator {
     #[allow(dead_code)]
-    manager: Rc<PowerManager>,
+    manager: Arc<PowerManager>,
     inner: ffi::DeviceIterator,
 }
 
@@ -38,7 +38,7 @@ impl BatteryIterator for PowerIterator {
     type Manager = PowerManager;
     type Device = PowerDevice;
 
-    fn new(manager: Rc<Self::Manager>) -> Result<Self> {
+    fn new(manager: Arc<Self::Manager>) -> Result<Self> {
         let inner = ffi::DeviceIterator::new()?;
         Ok(Self { manager, inner })
     }

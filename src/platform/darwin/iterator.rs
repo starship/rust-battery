@@ -1,5 +1,5 @@
 use std::fmt;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::{iokit, IoKitDevice, IoKitManager};
 use crate::platform::traits::BatteryIterator;
@@ -7,7 +7,7 @@ use crate::Result;
 
 pub struct IoKitIterator {
     #[allow(dead_code)]
-    manager: Rc<IoKitManager>,
+    manager: Arc<IoKitManager>,
     inner: iokit::IoIterator,
 }
 
@@ -33,7 +33,7 @@ impl BatteryIterator for IoKitIterator {
     type Manager = IoKitManager;
     type Device = IoKitDevice;
 
-    fn new(manager: Rc<Self::Manager>) -> Result<Self> {
+    fn new(manager: Arc<Self::Manager>) -> Result<Self> {
         let services = manager.get_services()?;
 
         Ok(Self {

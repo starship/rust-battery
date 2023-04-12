@@ -1,5 +1,5 @@
 use std::fmt;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::platform::traits::*;
 use crate::platform::Iterator as PlatformIterator;
@@ -24,7 +24,7 @@ use crate::{Batteries, Battery, Result};
 ///
 /// [batteries]: struct.Battery.html
 pub struct Manager {
-    inner: Rc<PlatformManager>,
+    inner: Arc<PlatformManager>,
 }
 
 impl Manager {
@@ -32,7 +32,7 @@ impl Manager {
     pub fn new() -> Result<Manager> {
         let inner = PlatformManager::new()?;
 
-        Ok(Manager { inner: Rc::new(inner) })
+        Ok(Manager { inner: Arc::new(inner) })
     }
 
     /// Returns an iterator over available batteries.
