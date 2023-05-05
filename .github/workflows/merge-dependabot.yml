@@ -8,7 +8,7 @@ jobs:
     name: Auto-merge Dependabot PRs
     runs-on: ubuntu-latest
     steps:
-      - uses: akheron/dependabot-cron-action@d020867c009553e279f0200b621459444828a9b0
+      - uses: akheron/dependabot-cron-action@7c8c20dc33be141eb135aaa6280129be3e1ec4cc
         with:
           token: ${{ secrets.DEPENDABOT_GITHUB_API_TOKEN }}
           auto-merge: "minor"
