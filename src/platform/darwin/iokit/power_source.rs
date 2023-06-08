@@ -20,8 +20,14 @@ static IS_CHARGING_KEY: &str = "IsCharging";
 static VOLTAGE_KEY: &str = "Voltage";
 static AMPERAGE_KEY: &str = "Amperage";
 static DESIGN_CAPACITY_KEY: &str = "DesignCapacity";
-static MAX_CAPACITY_KEY: &str = "MaxCapacity";
-static CURRENT_CAPACITY_KEY: &str = "CurrentCapacity";
+
+// aarch64 means M series chips.
+// MaxCapacity and CurrentCapacity returns percentage in M series chips, ranging from 1 to 100.
+// Have to use AppleRawMaxCapacity and AppleRawCurrentCapacity to get actual mAh.
+// No idea if Intel-chip mac need to be changed as well.
+static MAX_CAPACITY_KEY: &str = if cfg!(target_arch = "aarch64") {"AppleRawMaxCapacity"} else {"MaxCapacity"};
+static CURRENT_CAPACITY_KEY: &str = if cfg!(target_arch = "aarch64") {"AppleRawCurrentCapacity"} else {"CurrentCapacity"};
+
 static TEMPERATURE_KEY: &str = "Temperature";
 static CYCLE_COUNT_KEY: &str = "CycleCount";
 static TIME_REMAINING_KEY: &str = "TimeRemaining";
