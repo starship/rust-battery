@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1](https://github.com/starship/rust-battery/compare/v0.8.0...v0.8.1) (2023-06-08)
+
+
+### Bug Fixes
+
+* use correct data source for querying max capacity on arm64-macOS ([#33](https://github.com/starship/rust-battery/issues/33)) ([fadcee6](https://github.com/starship/rust-battery/commit/fadcee6c5e052ba58e92ea0290e1d582b2609e4f))
+
 ## [0.8.0](https://github.com/starship/rust-battery/compare/v0.7.9...v0.8.0) (2023-04-12)
 
 
