@@ -13,7 +13,9 @@ use std::str;
     derive(serde::Serialize, serde::Deserialize),
     serde(rename_all = "lowercase")
 )]
+#[derive(Default)]
 pub enum State {
+    #[default]
     Unknown,
     Charging,
     Discharging,
@@ -54,8 +56,4 @@ impl fmt::Display for State {
     }
 }
 
-impl Default for State {
-    fn default() -> Self {
-        State::Unknown
-    }
-}
+
