@@ -88,7 +88,7 @@ impl DeviceIterator {
             return Err(io::Error::from_raw_os_error(result as i32));
         }
 
-        let mut pdidd = unsafe {
+        let pdidd = unsafe {
             winbase::LocalAlloc(minwinbase::LPTR, buf_size as basetsd::SIZE_T)
                 as setupapi::PSP_DEVICE_INTERFACE_DETAIL_DATA_W
         };
