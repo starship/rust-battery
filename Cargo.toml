@@ -10,7 +10,7 @@ categories = ["os"]
 keywords = ["battery", "linux", "macos", "windows", "freebsd"]
 license = "ISC"
 build = "build.rs"
-rust-version = "1.56"
+rust-version = "1.63"
 
 [features]
 config-schema = ["schemars", "serde"]

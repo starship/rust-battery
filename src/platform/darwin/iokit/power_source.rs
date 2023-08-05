@@ -25,8 +25,10 @@ static DESIGN_CAPACITY_KEY: &str = "DesignCapacity";
 // MaxCapacity and CurrentCapacity returns percentage in M series chips, ranging from 1 to 100.
 // Have to use AppleRawMaxCapacity and AppleRawCurrentCapacity to get actual mAh.
 // No idea if Intel-chip mac need to be changed as well.
-static MAX_CAPACITY_KEY: &str = if cfg!(target_arch = "aarch64") {"AppleRawMaxCapacity"} else {"MaxCapacity"};
-static CURRENT_CAPACITY_KEY: &str = if cfg!(target_arch = "aarch64") {"AppleRawCurrentCapacity"} else {"CurrentCapacity"};
+static MAX_CAPACITY_KEY_RAW: &str = "AppleRawMaxCapacity";
+static CURRENT_CAPACITY_KEY_RAW: &str = "AppleRawCurrentCapacity";
+static MAX_CAPACITY_KEY: &str = "MaxCapacity";
+static CURRENT_CAPACITY_KEY: &str = "CurrentCapacity";
 
 static TEMPERATURE_KEY: &str = "Temperature";
 static CYCLE_COUNT_KEY: &str = "CycleCount";
@@ -43,8 +45,8 @@ pub struct InstantData {
     voltage: ElectricPotential,
     amperage: ElectricCurrent,
     design_capacity: Option<ElectricCharge>,
-    max_capacity: ElectricCharge,
-    current_capacity: ElectricCharge,
+    max_capacity: Option<ElectricCharge>,
+    current_capacity: Option<ElectricCharge>,
     temperature: Option<ThermodynamicTemperature>,
     cycle_count: Option<u32>,
     time_remaining: Option<Time>,
@@ -61,8 +63,14 @@ impl InstantData {
             design_capacity: Self::get_u32(props, DESIGN_CAPACITY_KEY)
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
-            max_capacity: milliampere_hour!(Self::get_u32(props, MAX_CAPACITY_KEY)?),
-            current_capacity: milliampere_hour!(Self::get_u32(props, CURRENT_CAPACITY_KEY)?),
+            max_capacity: Self::get_u32(props, MAX_CAPACITY_KEY_RAW)
+                .or_else(|_| Self::get_u32(props, MAX_CAPACITY_KEY))
+                .ok()
+                .map(|capacity| milliampere_hour!(capacity)),
+            current_capacity: Self::get_u32(props, CURRENT_CAPACITY_KEY_RAW)
+                .or_else(|_| Self::get_u32(props, CURRENT_CAPACITY_KEY))
+                .ok()
+                .map(|capacity| milliampere_hour!(capacity)),
             temperature: Self::get_i32(props, TEMPERATURE_KEY)
                 .map(|value| celsius!(value as f32 / 100.0))
                 .ok(),
@@ -206,11 +214,11 @@ impl DataSource for PowerSource {
     }
 
     fn max_capacity(&self) -> ElectricCharge {
-        self.data.max_capacity
+        self.data.max_capacity.unwrap_or_default()
     }
 
     fn current_capacity(&self) -> ElectricCharge {
-        self.data.current_capacity
+        self.data.current_capacity.unwrap_or_default()
     }
 
     fn temperature(&self) -> Option<ThermodynamicTemperature> {

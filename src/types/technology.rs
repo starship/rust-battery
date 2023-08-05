@@ -6,7 +6,9 @@ use crate::Error;
 /// Possible battery technologies.
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[non_exhaustive]
+#[derive(Default)]
 pub enum Technology {
+    #[default]
     Unknown,
     LithiumIon,
     LeadAcid,
@@ -62,8 +64,4 @@ impl fmt::Display for Technology {
     }
 }
 
-impl Default for Technology {
-    fn default() -> Self {
-        Technology::Unknown
-    }
-}
+
