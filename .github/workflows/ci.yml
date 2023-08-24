@@ -38,7 +38,7 @@ jobs:
             os: macos-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v3.6.0
       - uses: actions-rs/toolchain@v1.0.7
         with:
           toolchain: ${{ matrix.toolchain }}
@@ -97,7 +97,7 @@ jobs:
             os: macos-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v3.6.0
       # FreeBSD requires latest cross
       - run: cargo install cross --git https://github.com/cross-rs/cross
 
