@@ -45,7 +45,7 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
-      - uses: Swatinem/rust-cache@v2.7.0
+      - uses: Swatinem/rust-cache@v2.7.2
         with:
           key: ${{ matrix.target }}
 
@@ -107,7 +107,7 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
-      - uses: Swatinem/rust-cache@v2.7.0
+      - uses: Swatinem/rust-cache@v2.7.2
         with:
           key: ${{ matrix.target }}
 
