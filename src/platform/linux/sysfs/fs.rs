@@ -94,7 +94,7 @@ pub fn scope<T: AsRef<Path>>(path: T) -> Result<Scope> {
 pub fn get_string<T: AsRef<Path>>(path: T) -> Result<Option<String>> {
     match std::fs::read(path) {
         Ok(buffer) => {
-            let mut content = String::from_utf8_lossy(buffer.as_slice()).replace(|c: char| !c.is_ascii(), "");
+            let mut content: String = String::from_utf8_lossy(buffer.as_slice()).into();
             if content.starts_with('\0') {
                 Err(io::Error::from(io::ErrorKind::InvalidData).into())
             } else {

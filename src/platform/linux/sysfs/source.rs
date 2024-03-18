@@ -301,7 +301,7 @@ impl<'p> DataBuilder<'p> {
             // (real one this time), it is better just to ignore this value.
             // See: https://github.com/svartalf/rust-battery/issues/23
             match value {
-                Some(cycles) if cycles == 0 => None,
+                Some(0) => None,
                 Some(cycles) => Some(cycles),
                 None => None,
             }
