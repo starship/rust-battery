@@ -95,7 +95,7 @@ pub fn get_string<T: AsRef<Path>>(path: T) -> Result<Option<String>> {
     match std::fs::read(path) {
         Ok(buffer) => {
             let utf8_cow = String::from_utf8_lossy(buffer.as_slice()).replace(|c: char| !c.is_ascii(), "");
-            let mut content: String = utf8_cow.into();
+            let mut content: String = utf8_cow;
             if content.starts_with('\0') {
                 Err(io::Error::from(io::ErrorKind::InvalidData).into())
             } else {
