@@ -14,7 +14,11 @@ const ENODEV: i32 = 19;
 /// Read µWh value from the `energy_` file and convert into `Energy` type.
 pub fn energy<T: AsRef<Path>>(path: T) -> Result<Option<Energy>> {
     let path = path.as_ref();
-    debug_assert!(path.file_name().unwrap().to_string_lossy().starts_with("energy_"));
+    debug_assert!(path
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .starts_with("energy_"));
 
     match get::<f32, _>(path) {
         Ok(Some(value_uwh)) => Ok(Some(microwatt_hour!(value_uwh))),
@@ -26,7 +30,11 @@ pub fn energy<T: AsRef<Path>>(path: T) -> Result<Option<Energy>> {
 /// Read µAh value from the `charge_` file and convert into `ElectricCharge` type.
 pub fn charge<T: AsRef<Path>>(path: T) -> Result<Option<ElectricCharge>> {
     let path = path.as_ref();
-    debug_assert!(path.file_name().unwrap().to_string_lossy().starts_with("charge_"));
+    debug_assert!(path
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .starts_with("charge_"));
 
     match get::<f32, _>(path) {
         Ok(Some(value_uah)) if value_uah > 1.0 => Ok(Some(microampere_hour!(value_uah))),
@@ -39,7 +47,11 @@ pub fn charge<T: AsRef<Path>>(path: T) -> Result<Option<ElectricCharge>> {
 /// Read µV value from the `voltage_` file and convert into `ElectricPotential` type.
 pub fn voltage<T: AsRef<Path>>(path: T) -> Result<Option<ElectricPotential>> {
     let path = path.as_ref();
-    debug_assert!(path.file_name().unwrap().to_string_lossy().starts_with("voltage_"));
+    debug_assert!(path
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .starts_with("voltage_"));
 
     match get::<f32, _>(path) {
         Ok(Some(value_uv)) if value_uv > 1.0 => Ok(Some(microvolt!(value_uv))),
@@ -52,7 +64,11 @@ pub fn voltage<T: AsRef<Path>>(path: T) -> Result<Option<ElectricPotential>> {
 /// Read µW value from the `power_` file and convert into `Power` type.
 pub fn power<T: AsRef<Path>>(path: T) -> Result<Option<Power>> {
     let path = path.as_ref();
-    debug_assert!(path.file_name().unwrap().to_string_lossy().starts_with("power_"));
+    debug_assert!(path
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .starts_with("power_"));
 
     match get::<f32, _>(path) {
         Ok(Some(value_uw)) if value_uw > 10_000.0 => Ok(Some(microwatt!(value_uw))),

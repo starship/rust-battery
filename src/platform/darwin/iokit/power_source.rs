@@ -9,7 +9,9 @@ use core_foundation::string::{CFString, CFStringGetTypeID};
 
 use super::super::traits::DataSource;
 use super::IoObject;
-use crate::units::{ElectricCharge, ElectricCurrent, ElectricPotential, ThermodynamicTemperature, Time};
+use crate::units::{
+    ElectricCharge, ElectricCurrent, ElectricPotential, ThermodynamicTemperature, Time,
+};
 use crate::{Error, Result};
 
 type Properties = CFDictionary<CFString, CFType>;
@@ -75,13 +77,15 @@ impl InstantData {
                 .map(|value| celsius!(value as f32 / 100.0))
                 .ok(),
             cycle_count: Self::get_u32(props, CYCLE_COUNT_KEY).ok(),
-            time_remaining: Self::get_i32(props, TIME_REMAINING_KEY).ok().and_then(|val| {
-                if val == i32::MAX {
-                    None
-                } else {
-                    Some(minute!(val))
-                }
-            }),
+            time_remaining: Self::get_i32(props, TIME_REMAINING_KEY)
+                .ok()
+                .and_then(|val| {
+                    if val == i32::MAX {
+                        None
+                    } else {
+                        Some(minute!(val))
+                    }
+                }),
         })
     }
 
@@ -248,6 +252,8 @@ impl DataSource for PowerSource {
 
 impl fmt::Debug for PowerSource {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("PowerSource").field("io_object", &self.object).finish()
+        f.debug_struct("PowerSource")
+            .field("io_object", &self.object)
+            .finish()
     }
 }

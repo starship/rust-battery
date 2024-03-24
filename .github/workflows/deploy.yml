@@ -33,14 +33,10 @@ jobs:
     if: ${{ needs.release_please.outputs.release_created == 'true' }}
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
 
       - name: Setup | Rust
-        uses: actions-rs/toolchain@v1.0.7
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Build | Publish
         run: cargo publish

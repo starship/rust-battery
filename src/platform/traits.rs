@@ -6,7 +6,9 @@ use std::sync::Arc;
 use num_traits::identities::Zero;
 use uom::si::time::{day, hour};
 
-use crate::units::{Bound, ElectricPotential, Energy, Power, Ratio, ThermodynamicTemperature, Time};
+use crate::units::{
+    Bound, ElectricPotential, Energy, Power, Ratio, ThermodynamicTemperature, Time,
+};
 use crate::{Result, State, Technology};
 
 pub trait BatteryManager: Debug + Sized {
@@ -17,7 +19,9 @@ pub trait BatteryManager: Debug + Sized {
     fn refresh(&self, battery: &mut <Self::Iterator as BatteryIterator>::Device) -> Result<()>;
 }
 
-pub trait BatteryIterator: Iterator<Item = Result<<Self as BatteryIterator>::Device>> + Debug + Sized {
+pub trait BatteryIterator:
+    Iterator<Item = Result<<Self as BatteryIterator>::Device>> + Debug + Sized
+{
     type Manager: BatteryManager<Iterator = Self>;
     type Device: BatteryDevice;
 

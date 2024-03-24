@@ -137,7 +137,9 @@ pub struct AcpiBst {
 impl AcpiBst {
     // int acpi_battery_bst_valid(struct acpi_bst *bst)
     pub fn is_valid(&self) -> bool {
-        self.state != ACPI_BATT_STAT_NOT_PRESENT && self.cap != ACPI_BATT_UNKNOWN && self.volt != ACPI_BATT_UNKNOWN
+        self.state != ACPI_BATT_STAT_NOT_PRESENT
+            && self.cap != ACPI_BATT_UNKNOWN
+            && self.volt != ACPI_BATT_UNKNOWN
     }
 
     // based on `ACPI_BATT_STAT_*` defines

@@ -17,7 +17,10 @@ impl IoMasterPort {
         let mut master_port: port::mach_port_t = port::MACH_PORT_NULL;
 
         unsafe {
-            kern_try!(sys::IOMasterPort(sys::kIOMasterPortDefault, &mut master_port));
+            kern_try!(sys::IOMasterPort(
+                sys::kIOMasterPortDefault,
+                &mut master_port
+            ));
         }
 
         Ok(IoMasterPort(master_port))
@@ -34,7 +37,11 @@ impl IoMasterPort {
         let mut iterator = IoIterator::default();
 
         unsafe {
-            kern_try!(sys::IOServiceGetMatchingServices(self.0, service, &mut *iterator));
+            kern_try!(sys::IOServiceGetMatchingServices(
+                self.0,
+                service,
+                &mut *iterator
+            ));
         }
 
         Ok(iterator)

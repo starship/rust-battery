@@ -70,11 +70,13 @@
 
 // Re-exports for easier crate usage
 pub use uom::si::f32::{
-    ElectricCharge, ElectricCurrent, ElectricPotential, Energy, Power, Ratio, ThermodynamicTemperature, Time,
+    ElectricCharge, ElectricCurrent, ElectricPotential, Energy, Power, Ratio,
+    ThermodynamicTemperature, Time,
 };
 pub use uom::si::Unit;
 pub use uom::si::{
-    electric_charge, electric_current, electric_potential, energy, power, ratio, thermodynamic_temperature, time,
+    electric_charge, electric_current, electric_potential, energy, power, ratio,
+    thermodynamic_temperature, time,
 };
 
 use num_traits::ToPrimitive;
@@ -123,8 +125,14 @@ impl_into_quantity!(power::microwatt, Power);
 impl_into_quantity!(electric_potential::volt, ElectricPotential);
 impl_into_quantity!(electric_potential::millivolt, ElectricPotential);
 impl_into_quantity!(electric_potential::microvolt, ElectricPotential);
-impl_into_quantity!(thermodynamic_temperature::degree_celsius, ThermodynamicTemperature);
-impl_into_quantity!(thermodynamic_temperature::decikelvin, ThermodynamicTemperature);
+impl_into_quantity!(
+    thermodynamic_temperature::degree_celsius,
+    ThermodynamicTemperature
+);
+impl_into_quantity!(
+    thermodynamic_temperature::decikelvin,
+    ThermodynamicTemperature
+);
 impl_into_quantity!(ratio::percent, Ratio);
 impl_into_quantity!(time::second, Time);
 impl_into_quantity!(time::minute, Time);
@@ -222,7 +230,10 @@ macro_rules! percent {
 /// Create `ThermodynamicTemperature` quantity with `degree_celsius` unit
 macro_rules! celsius {
     ($value:expr) => {
-        unit!($crate::units::thermodynamic_temperature::degree_celsius, $value)
+        unit!(
+            $crate::units::thermodynamic_temperature::degree_celsius,
+            $value
+        )
     };
 }
 

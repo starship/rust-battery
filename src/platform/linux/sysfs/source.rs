@@ -7,7 +7,9 @@ use num_traits::identities::Zero;
 
 use super::fs;
 use crate::units::power::{microwatt, watt};
-use crate::units::{Bound, ElectricCharge, ElectricPotential, Energy, Power, Ratio, ThermodynamicTemperature};
+use crate::units::{
+    Bound, ElectricCharge, ElectricPotential, Energy, Power, Ratio, ThermodynamicTemperature,
+};
 use crate::{Error, Result, State, Technology};
 
 #[derive(Debug)]
@@ -146,7 +148,9 @@ impl<'p> DataBuilder<'p> {
             None => match self.charge_now() {
                 Some(charge) => Ok(charge * *self.design_voltage()?),
                 None => match fs::get::<f32, _>(self.root.join("capacity")) {
-                    Ok(Some(capacity)) => Ok(*self.energy_full()? * percent!(capacity).into_bounded()),
+                    Ok(Some(capacity)) => {
+                        Ok(*self.energy_full()? * percent!(capacity).into_bounded())
+                    }
                     _ => Err(Error::not_found("Unable to calculate device energy value")),
                 },
             },
@@ -212,7 +216,13 @@ impl<'p> DataBuilder<'p> {
 
             let value = value
                 // Sanity check if power is greater than 100W (upower)
-                .map(|power| if power.get::<watt>() > 100.0 { watt!(0.0) } else { power })
+                .map(|power| {
+                    if power.get::<watt>() > 100.0 {
+                        watt!(0.0)
+                    } else {
+                        power
+                    }
+                })
                 // Some batteries give out massive rate values when nearly empty (upower)
                 .map(|power| {
                     if power.get::<microwatt>() < 10.0 {
@@ -252,7 +262,9 @@ impl<'p> DataBuilder<'p> {
         self.state_of_charge.try_borrow_with(|| {
             match fs::get::<f32, _>(self.root.join("capacity")) {
                 Ok(Some(capacity)) => Ok(percent!(capacity).into_bounded()),
-                Ok(None) if self.energy_full()?.is_sign_positive() => Ok(*self.energy()? / *self.energy_full()?),
+                Ok(None) if self.energy_full()?.is_sign_positive() => {
+                    Ok(*self.energy()? / *self.energy_full()?)
+                }
                 // Same as upower, falling back to 0.0%
                 Ok(None) => Ok(percent!(0.0)),
                 Err(e) => Err(e),
@@ -270,13 +282,12 @@ impl<'p> DataBuilder<'p> {
     }
 
     fn voltage(&self) -> Result<ElectricPotential> {
-        let mut value =
-            ["voltage_now", "voltage_avg"]
-                .iter()
-                .filter_map(|filename| match fs::voltage(self.root.join(filename)) {
-                    Ok(Some(value)) => Some(value),
-                    _ => None,
-                });
+        let mut value = ["voltage_now", "voltage_avg"]
+            .iter()
+            .filter_map(|filename| match fs::voltage(self.root.join(filename)) {
+                Ok(Some(value)) => Some(value),
+                _ => None,
+            });
 
         match value.next() {
             Some(value) => Ok(value),

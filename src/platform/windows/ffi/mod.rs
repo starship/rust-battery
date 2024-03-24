@@ -6,7 +6,9 @@ use std::ops::DerefMut;
 
 use winapi::ctypes;
 use winapi::shared::{basetsd, devguid, minwindef, ntdef, windef, winerror};
-use winapi::um::{errhandlingapi, fileapi, handleapi, ioapiset, minwinbase, setupapi, winbase, winnt};
+use winapi::um::{
+    errhandlingapi, fileapi, handleapi, ioapiset, minwinbase, setupapi, winbase, winnt,
+};
 
 mod ioctl;
 mod wide_string;
@@ -71,7 +73,10 @@ impl DeviceIterator {
         }
     }
 
-    fn get_interface_detail(&self, data: &mut setupapi::SP_DEVICE_INTERFACE_DATA) -> io::Result<InterfaceDetailData> {
+    fn get_interface_detail(
+        &self,
+        data: &mut setupapi::SP_DEVICE_INTERFACE_DATA,
+    ) -> io::Result<InterfaceDetailData> {
         let mut buf_size: minwindef::DWORD = 0;
         unsafe {
             setupapi::SetupDiGetDeviceInterfaceDetailW(
@@ -314,7 +319,10 @@ impl DeviceHandle {
         self.query_string(ioctl::info_level::BatterySerialNumber)
     }
 
-    fn query_string(&mut self, level: ioctl::info_level::BATTERY_QUERY_INFORMATION_LEVEL) -> io::Result<String> {
+    fn query_string(
+        &mut self,
+        level: ioctl::info_level::BATTERY_QUERY_INFORMATION_LEVEL,
+    ) -> io::Result<String> {
         let mut query = ioctl::BatteryQueryInformation::default();
         query.BatteryTag = self.tag.BatteryTag;
         query.InformationLevel = level;

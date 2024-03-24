@@ -23,7 +23,9 @@ pub struct SysFsDevice {
 impl SysFsDevice {
     pub fn is_system_battery<T: AsRef<Path>>(path: T) -> Result<bool> {
         let path = path.as_ref();
-        if fs::type_(path.join("type"))? == Type::Battery && fs::scope(path.join("scope"))? == Scope::System {
+        if fs::type_(path.join("type"))? == Type::Battery
+            && fs::scope(path.join("scope"))? == Scope::System
+        {
             return Ok(true);
         }
 
@@ -60,7 +62,10 @@ impl SysFsDevice {
             Ok(())
         } else {
             let inner = io::Error::from(io::ErrorKind::NotFound);
-            let e = Error::new(inner, format!("Device directory `{:?}` is missing", self.root));
+            let e = Error::new(
+                inner,
+                format!("Device directory `{:?}` is missing", self.root),
+            );
 
             Err(e)
         }
@@ -127,6 +132,8 @@ impl BatteryDevice for SysFsDevice {
 
 impl fmt::Debug for SysFsDevice {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("LinuxDevice").field("root", &self.root).finish()
+        f.debug_struct("LinuxDevice")
+            .field("root", &self.root)
+            .finish()
     }
 }

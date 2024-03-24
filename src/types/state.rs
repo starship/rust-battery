@@ -55,5 +55,3 @@ impl fmt::Display for State {
         write!(f, "{}", display)
     }
 }
-
-
