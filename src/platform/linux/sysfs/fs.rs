@@ -1,5 +1,4 @@
 use std::error;
-use std::fs::read_to_string;
 use std::io;
 use std::path::Path;
 use std::str::FromStr;
@@ -93,8 +92,9 @@ pub fn scope<T: AsRef<Path>>(path: T) -> Result<Scope> {
 /// Ok(None) - file is missing
 /// Err(_) - unable to access file for some reasons (except `NotFound` and `ENODEV`)
 pub fn get_string<T: AsRef<Path>>(path: T) -> Result<Option<String>> {
-    match read_to_string(path) {
-        Ok(mut content) => {
+    match std::fs::read(path) {
+        Ok(buffer) => {
+            let mut content: String = String::from_utf8_lossy(buffer.as_slice()).into();
             if content.starts_with('\0') {
                 Err(io::Error::from(io::ErrorKind::InvalidData).into())
             } else {
