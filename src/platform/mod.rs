@@ -23,6 +23,12 @@ cfg_if! {
         pub type Manager = freebsd::IoCtlManager;
         pub type Iterator = freebsd::IoCtlIterator;
         pub type Device = freebsd::IoCtlDevice;
+     } else if #[cfg(target_os = "netbsd")] {
+        mod netbsd;
+
+        pub type Manager = netbsd::SysMonManager;
+        pub type Iterator = netbsd::SysMonIterator;
+        pub type Device = netbsd::SysMonDevice;
     } else {
         compile_error!("Support for this target OS is not implemented yet!\n \
             You may want to create an issue: https://github.com/starship/rust-battery/issues/new");

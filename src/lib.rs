@@ -10,6 +10,7 @@
 //! * Windows 7+
 //! * FreeBSD
 //! * DragonFlyBSD
+//! * NetBSD
 //!
 //! ## Examples
 //!
@@ -32,9 +33,12 @@ extern crate cfg_if;
 #[macro_use]
 extern crate winapi;
 
-#[cfg(any(target_os = "dragonfly", target_os = "freebsd"))]
+#[cfg(any(target_os = "dragonfly", target_os = "freebsd", target_os = "netbsd"))]
 #[macro_use]
 extern crate nix;
+
+#[cfg(target_os = "netbsd")]
+extern crate plist;
 
 mod types;
 #[macro_use]

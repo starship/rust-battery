@@ -38,6 +38,7 @@ as a typed values, recalculated as necessary to be returned as a [SI measurement
 - Windows 7+
 - FreeBSD
 - DragonFlyBSD
+- NetBSD
 
 Do note that iOS implementation uses IOKit bindings, your application
 might be automatically rejected by Apple based on that fact. Use it on your own risk.
@@ -50,7 +51,7 @@ Add the following line into a `Cargo.toml`:
 
 ```toml
 [dependencies]
-battery = "0.7.8"
+battery = "0.8.3"
 ```
 
 ## Examples
