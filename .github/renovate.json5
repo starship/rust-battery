@@ -7,7 +7,7 @@
         "group:monorepos",
         "group:recommended",
         "replacements:all",
-        "workarounds:all"
+        "workarounds:all",
         // automerge minor updates
         ":automergeMinor",
         ":automergeBranch"
