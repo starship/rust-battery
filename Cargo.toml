@@ -39,4 +39,4 @@ nix = { version = "~0.28", default-features = false, features = ["ioctl"] }
 
 [dev-dependencies]
 approx = "0.5.1"
-tempfile = "^3.10"
+tempfile = "^3.10.1"
