@@ -32,7 +32,9 @@ impl Manager {
     pub fn new() -> Result<Manager> {
         let inner = PlatformManager::new()?;
 
-        Ok(Manager { inner: Arc::new(inner) })
+        Ok(Manager {
+            inner: Arc::new(inner),
+        })
     }
 
     /// Returns an iterator over available batteries.
@@ -56,6 +58,8 @@ impl Manager {
 
 impl fmt::Debug for Manager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("Manager").field("impl", &self.inner).finish()
+        f.debug_struct("Manager")
+            .field("impl", &self.inner)
+            .finish()
     }
 }

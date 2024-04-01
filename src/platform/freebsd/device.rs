@@ -66,7 +66,9 @@ impl IoCtlDevice {
         };
         self.max_capacity = match bif.units() {
             acpi::Units::MilliWatts => milliwatt_hour!(bif.last_full_capacity()),
-            acpi::Units::MilliAmperes => milliampere_hour!(bif.last_full_capacity()) * design_voltage,
+            acpi::Units::MilliAmperes => {
+                milliampere_hour!(bif.last_full_capacity()) * design_voltage
+            }
         };
         self.state = bst.state();
         self.voltage = voltage;
@@ -127,6 +129,8 @@ impl BatteryDevice for IoCtlDevice {
 
 impl fmt::Debug for IoCtlDevice {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("FreeBSDDevice").field("unit", &self.unit).finish()
+        f.debug_struct("FreeBSDDevice")
+            .field("unit", &self.unit)
+            .finish()
     }
 }

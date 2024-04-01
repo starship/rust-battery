@@ -23,7 +23,10 @@ extern "C" {
 
     // https://developer.apple.com/documentation/iokit/1514652-iomasterport
     // Should be deallocated with `mach_port_deallocate(mach_task_self(), masterPort)`
-    pub fn IOMasterPort(bootstrapPort: mach_port_t, masterPort: *mut mach_port_t) -> kern_return::kern_return_t;
+    pub fn IOMasterPort(
+        bootstrapPort: mach_port_t,
+        masterPort: *mut mach_port_t,
+    ) -> kern_return::kern_return_t;
 
     // https://developer.apple.com/documentation/iokit/1514687-ioservicematching
     // The dictionary is commonly passed to IOServiceGetMatchingServices or IOServiceAddNotification

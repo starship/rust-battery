@@ -27,7 +27,11 @@ impl ops::Deref for InterfaceDetailData {
 impl Drop for InterfaceDetailData {
     fn drop(&mut self) {
         let res = unsafe { winbase::LocalFree(self.0 as *mut c_void) };
-        debug_assert_eq!(res, ntdef::NULL, "Unable to free device interface detail data");
+        debug_assert_eq!(
+            res,
+            ntdef::NULL,
+            "Unable to free device interface detail data"
+        );
     }
 }
 

@@ -3,7 +3,9 @@ use super::traits::DataSource;
 use crate::platform::traits::BatteryDevice;
 use crate::units::energy::watt_hour;
 use crate::units::power::milliwatt;
-use crate::units::{ElectricCharge, ElectricCurrent, ElectricPotential, ThermodynamicTemperature, Time};
+use crate::units::{
+    ElectricCharge, ElectricCurrent, ElectricPotential, ThermodynamicTemperature, Time,
+};
 use crate::Result;
 
 /// This data source is not using uom types, because it is easier to create test suites

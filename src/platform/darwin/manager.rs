@@ -31,6 +31,8 @@ impl Deref for IoKitManager {
 
 impl fmt::Debug for IoKitManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("MacOSManager").field("io_master_port", &self.0).finish()
+        f.debug_struct("MacOSManager")
+            .field("io_master_port", &self.0)
+            .finish()
     }
 }

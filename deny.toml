@@ -1,0 +1,35 @@
+[graph]
+all-features = true
+
+[advisories]
+version = 2
+
+# A list of advisory IDs to ignore. Note that ignored advisories will still
+# output a note when they are encountered.
+ignore = [
+
+
+  # { id = "RUSTSEC-0000-0000",  reason = "" },
+]
+
+[licenses]
+version = 2
+
+# List of explicitly allowed licenses
+allow = [
+  "Apache-2.0",
+  "ISC",
+  "MIT",
+  "Unicode-DFS-2016",
+]
+confidence-threshold = 0.8
+
+[bans]
+multiple-versions = "allow"
+wildcards = "warn"
+
+[sources]
+unknown-registry = "warn"
+unknown-git = "warn"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

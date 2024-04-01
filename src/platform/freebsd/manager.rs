@@ -37,6 +37,8 @@ impl Deref for IoCtlManager {
 
 impl fmt::Debug for IoCtlManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("FreeBSD").field("fd", &self.0.as_raw_fd()).finish()
+        f.debug_struct("FreeBSD")
+            .field("fd", &self.0.as_raw_fd())
+            .finish()
     }
 }

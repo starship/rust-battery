@@ -107,12 +107,16 @@ where
     T: DataSource,
 {
     fn from(ds: T) -> IoKitDevice {
-        IoKitDevice { source: Box::new(ds) }
+        IoKitDevice {
+            source: Box::new(ds),
+        }
     }
 }
 
 impl fmt::Debug for IoKitDevice {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("MacOSDevice").field("source", &self.source).finish()
+        f.debug_struct("MacOSDevice")
+            .field("source", &self.source)
+            .finish()
     }
 }
