@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.3](https://github.com/starship/rust-battery/compare/v0.8.2...v0.8.3) (2024-04-02)
+
+
+### Bug Fixes
+
+* **linux:** be more permissive on invalid UTF-8 file content ([#60](https://github.com/starship/rust-battery/issues/60)) ([3a229ec](https://github.com/starship/rust-battery/commit/3a229ec4a240ffaed99706c315a29e3ece691e5b))
+
 ## [0.8.2](https://github.com/starship/rust-battery/compare/v0.8.1...v0.8.2) (2023-08-05)
 
 
