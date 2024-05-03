@@ -1,6 +1,5 @@
 extern crate starship_battery as battery;
 
-// use std::io;
 use std::thread;
 use std::time::Duration;
 use std::vec::Vec;
