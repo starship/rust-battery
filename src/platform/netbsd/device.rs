@@ -85,7 +85,9 @@ impl<'a> EnvSysDevice<'a> {
                     // Read that in https://github.com/NetBSD/src/blob/trunk/sys/dev/acpi/acpi_bat.c line 555.
                     status = attr_res.get_rstring("state")? == "invalid";
                 }
-                Ok("charging") => data.charging = Self::validate(attr_res)?.get_ri64("cur-value")?,
+                Ok("charging") => {
+                    data.charging = Self::validate(attr_res)?.get_ri64("cur-value")?
+                }
                 Ok(_) => continue,
                 Err(e) => match attr_res.get_rdict("device-properties") {
                     Ok(_) => continue,
@@ -128,7 +130,9 @@ pub struct SysMonDevice {
 impl SysMonDevice {
     // data.name should match the SysMonDevice object.name already
     pub fn new(data: EnvSysDevice) -> Result<Self> {
-        let mut bat = Self { ..Default::default() };
+        let mut bat = Self {
+            ..Default::default()
+        };
 
         match bat.refresh(data) {
             Ok(_) => Ok(bat),
@@ -148,7 +152,8 @@ impl SysMonDevice {
             "Ampere hour" => {
                 self.energy = microampere_hour!(data.energy) * design_voltage;
                 self.energy_full = microampere_hour!(data.energy_full) * design_voltage;
-                self.energy_full_design = microampere_hour!(data.energy_full_design) * design_voltage;
+                self.energy_full_design =
+                    microampere_hour!(data.energy_full_design) * design_voltage;
             }
             "Watt hour" => {
                 self.energy = microwatt_hour!(data.energy);

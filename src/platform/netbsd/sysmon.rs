@@ -54,7 +54,7 @@ pub fn get_system_envsys_plist() -> Result<plist::Dictionary, Error> {
     })?;
 
     unsafe {
-        // The netbsd libprog says ioctl returned mmap'ed memory that must be munmap'ed.
+        // The netbsd libprop says ioctl returned mmap'ed memory that must be munmap'ed.
         // https://www.unitedbsd.com/d/486-querying-battery-information-wo-envstat/4
         // https://github.com/NetBSD/src/blob/trunk/common/lib/libprop/prop_kern.c
         // Also unwrap is fine as we already check for non_null above.
