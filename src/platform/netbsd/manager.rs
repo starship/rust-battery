@@ -22,7 +22,7 @@ impl BatteryManager for SysMonManager {
         let envsys = get_system_envsys_plist()?;
 
         match envsys.get(device.name.as_str()) {
-            Some(sensor) => device.refresh(EnvSysDevice::new(device.name.to_owned(), &sensor)?),
+            Some(sensor) => device.refresh(EnvSysDevice::new(device.name.to_owned(), sensor)?),
             None => Err(Error::not_found("Could not refresh battery")),
         }
     }

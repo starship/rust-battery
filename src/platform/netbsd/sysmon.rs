@@ -45,7 +45,7 @@ pub fn get_system_envsys_plist() -> Result<plist::Dictionary, Error> {
         envsys_getdictionary(fd, addr_of_mut!(plist_ref))?;
     }
 
-    if plist_ref.pref_len == 0 || plist_ref.pref_plist == null_mut() {
+    if plist_ref.pref_len == 0 || plist_ref.pref_plist.is_null() {
         return Err(Error::invalid_data("Invalid result of EnvSys ioctl"));
     }
 

@@ -69,7 +69,7 @@ impl<'a> EnvSysDevice<'a> {
                 Ok("last full cap") => data.energy_full = Self::val_cur_value(attr_res)?,
                 Ok("charge") => {
                     // max-value in the xml is assumed == to last full cap.
-                    if Self::validate(attr_res)?.get_rbool("want-percentage")? == false {
+                    if !Self::validate(attr_res)?.get_rbool("want-percentage")? {
                         return Err(Error::invalid_data("Not a valid battery"));
                     }
                     data.energy = attr_res.get_ru64("cur-value")?;
