@@ -3,3 +3,11 @@ passthrough = [
   "RUST_BACKTRACE",
   "RUST_LOG",
 ]
+
+# Fix already here https://github.com/cross-rs/cross/blob/main/docker/netbsd.sh
+# But no new release so temporary fix here instead
+# Current NetBSD target for cross-rs is 9.2
+[target.x86_64-unknown-netbsd]
+pre-build = [
+  "wget -qO- https://cdn.netbsd.org/pub/NetBSD/NetBSD-9.2/amd64/binary/sets/base.tar.xz | tar -xJf - -C /usr/local/lib/ --strip-components 3 './usr/lib/libexecinfo.so'"
+]
