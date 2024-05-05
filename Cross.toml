@@ -9,6 +9,6 @@ passthrough = [
 # Current NetBSD target for cross-rs is 9.2
 [target.x86_64-unknown-netbsd]
 pre-build = [
-  "apt-get update && apt-get --assume-yes install wget tar xz-utils",
-  "wget -qO- https://cdn.netbsd.org/pub/NetBSD/NetBSD-9.2/amd64/binary/sets/base.tar.xz | tar -xJf - -C /usr/local/lib/ --strip-components 3 './usr/lib/libexecinfo.so'"
+  "apt-get update && apt-get --assume-yes install wget tar xz-utils file",
+  "wget -qO- https://cdn.netbsd.org/pub/NetBSD/NetBSD-9.2/amd64/binary/sets/base.tar.xz | tar -xJf - -C /usr/local/x86_64-unknown-netbsd/lib/ --strip-components 3 --wildcards './usr/lib/libexecinfo.so*'",
 ]
