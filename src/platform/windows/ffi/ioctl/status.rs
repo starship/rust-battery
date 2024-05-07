@@ -2,47 +2,30 @@
 
 #![allow(non_snake_case, clippy::unreadable_literal)]
 
-use std::default::Default;
-use std::mem;
 use std::ops;
 
-use winapi::shared::ntdef;
+use windows_sys::Win32::System::Power::*;
 
 use crate::State;
 
-/// Current battery capacity is unknown.
-const BATTERY_UNKNOWN_CAPACITY: ntdef::ULONG = 0xFFFFFFFF;
-/// Current battery voltage is unknown.
-const BATTERY_UNKNOWN_VOLTAGE: ntdef::ULONG = 0xFFFFFFFF;
-/// Current battery rage is unknown.
-#[allow(overflowing_literals)]
-const BATTERY_UNKNOWN_RATE: ntdef::LONG = 0x80000000;
+pub struct BatteryStatus(BATTERY_STATUS);
 
-/// Indicates that the battery is currently charging.
-const BATTERY_CHARGING: ntdef::ULONG = 0x00000004;
-/// Indicates that battery failure is imminent. See the Remarks section for more information.
-const BATTERY_CRITICAL: ntdef::ULONG = 0x00000008;
-/// Indicates that the battery is currently discharging.
-const BATTERY_DISCHARGING: ntdef::ULONG = 0x00000002;
-/// Indicates that the system has access to AC power, so no batteries are being discharged.
-const BATTERY_POWER_ON_LINE: ntdef::ULONG = 0x00000001;
-
-STRUCT! {#[cfg_attr(target_arch = "x86", repr(packed))] #[derive(Debug)] struct BATTERY_STATUS {
-    PowerState: ntdef::ULONG,
-    Capacity: ntdef::ULONG, // mWh or BATTERY_UNKNOWN_CAPACITY
-    Voltage: ntdef::ULONG, // mV or BATTERY_UNKNOWN_VOLTAGE
-    Rate: ntdef::LONG, // mW, might be negative
-}}
-
-impl Default for BATTERY_STATUS {
-    #[inline]
+impl Default for BatteryStatus {
     fn default() -> Self {
-        unsafe { mem::zeroed() }
+        Self(unsafe { std::mem::zeroed() })
     }
 }
 
-#[derive(Debug, Default)]
-pub struct BatteryStatus(BATTERY_STATUS);
+impl std::fmt::Debug for BatteryStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        f.debug_struct("PowerState")
+            .field("PowerState", &self.0.PowerState)
+            .field("Capacity", &self.capacity())
+            .field("Voltage", &self.voltage())
+            .field("Rate", &self.rate())
+            .finish()
+    }
+}
 
 impl ops::Deref for BatteryStatus {
     type Target = BATTERY_STATUS;
@@ -54,6 +37,12 @@ impl ops::Deref for BatteryStatus {
 impl ops::DerefMut for BatteryStatus {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
+    }
+}
+
+impl From<BATTERY_STATUS> for BatteryStatus {
+    fn from(status: BATTERY_STATUS) -> Self {
+        Self(status)
     }
 }
 
@@ -106,7 +95,7 @@ impl BatteryStatus {
 
     /// The current rate of battery charge or discharge.
     pub fn rate(&self) -> Option<i32> {
-        if self.0.Rate == BATTERY_UNKNOWN_RATE {
+        if self.0.Rate == BATTERY_UNKNOWN_RATE as i32 {
             None
         } else {
             Some(self.0.Rate.abs())
