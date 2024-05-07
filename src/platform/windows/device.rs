@@ -1,15 +1,16 @@
 use std::convert::AsRef;
 use std::fmt;
 
-use super::ffi::{BatteryQueryInformation, DeviceHandle};
+use windows_sys::Win32::System::Power::BATTERY_QUERY_INFORMATION;
+
+use super::ffi::DeviceHandle;
 use crate::platform::traits::BatteryDevice;
 use crate::units::{ElectricPotential, Energy, Power, ThermodynamicTemperature};
 use crate::{Error, Result, State, Technology};
 
-#[derive(Default)]
 pub struct PowerDevice {
     // Used later for information refreshing
-    tag: BatteryQueryInformation,
+    tag: BATTERY_QUERY_INFORMATION,
 
     technology: Technology,
     state: State,
@@ -23,6 +24,26 @@ pub struct PowerDevice {
     device_name: Option<String>,
     manufacturer: Option<String>,
     serial_number: Option<String>,
+}
+
+impl Default for PowerDevice {
+    fn default() -> Self {
+        Self {
+            technology: Default::default(),
+            state: Default::default(),
+            voltage: Default::default(),
+            energy_rate: Default::default(),
+            capacity: Default::default(),
+            design_capacity: Default::default(),
+            full_charged_capacity: Default::default(),
+            temperature: None,
+            cycle_count: None,
+            device_name: None,
+            manufacturer: None,
+            serial_number: None,
+            tag: unsafe { std::mem::zeroed() },
+        }
+    }
 }
 
 impl PowerDevice {
@@ -47,7 +68,7 @@ impl PowerDevice {
         };
 
         let mut device = PowerDevice {
-            tag: handle.tag.clone(),
+            tag: handle.tag,
             technology: info.technology(),
             device_name,
             manufacturer,
@@ -92,7 +113,7 @@ impl PowerDevice {
         Ok(())
     }
 
-    pub fn tag(&self) -> &BatteryQueryInformation {
+    pub fn tag(&self) -> &BATTERY_QUERY_INFORMATION {
         &self.tag
     }
 }
@@ -148,9 +169,20 @@ impl BatteryDevice for PowerDevice {
 }
 
 impl fmt::Debug for PowerDevice {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("WindowsDevice")
-            .field("tag", &self.tag.battery_tag())
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("PowerDevice")
+            .field("technology", &self.technology)
+            .field("state", &self.state)
+            .field("voltage", &self.voltage)
+            .field("energy_rate", &self.energy_rate)
+            .field("capacity", &self.capacity)
+            .field("design_capacity", &self.design_capacity)
+            .field("full_charged_capacity", &self.full_charged_capacity)
+            .field("temperature", &self.temperature)
+            .field("cycle_count", &self.cycle_count)
+            .field("device_name", &self.device_name)
+            .field("manufacturer", &self.manufacturer)
+            .field("serial_number", &self.serial_number)
             .finish()
     }
 }

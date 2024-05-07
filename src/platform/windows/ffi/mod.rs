@@ -1,47 +1,44 @@
 use std::default::Default;
+use std::ffi;
 use std::io;
 use std::iter;
 use std::mem;
-use std::ops::DerefMut;
+use std::mem::MaybeUninit;
+use std::ptr;
 
-use winapi::ctypes;
-use winapi::shared::{basetsd, devguid, minwindef, ntdef, windef, winerror};
-use winapi::um::{
-    errhandlingapi, fileapi, handleapi, ioapiset, minwinbase, setupapi, winbase, winnt,
-};
+use windows_sys::core::*;
+use windows_sys::Win32::Devices::DeviceAndDriverInstallation as setupapi;
+use windows_sys::Win32::Foundation;
+use windows_sys::Win32::Security;
+use windows_sys::Win32::Storage::FileSystem as fileapi;
+use windows_sys::Win32::System::Power as systempower;
+use windows_sys::Win32::System::IO as ioapiset;
 
 mod ioctl;
 mod wide_string;
 mod wrappers;
 
-pub(crate) use self::ioctl::BatteryQueryInformation;
 use self::wide_string::WideString;
 use self::wrappers::*;
-
-#[inline]
-fn get_last_error() -> io::Error {
-    let error_type = unsafe { errhandlingapi::GetLastError() };
-    io::Error::from_raw_os_error(error_type as i32)
-}
 
 #[derive(Debug)]
 pub struct DeviceIterator {
     device: setupapi::HDEVINFO,
-    current: minwindef::DWORD,
+    current: u32,
 }
 
 impl DeviceIterator {
     pub fn new() -> io::Result<DeviceIterator> {
         let hdev = unsafe {
             setupapi::SetupDiGetClassDevsW(
-                &devguid::GUID_DEVCLASS_BATTERY,
-                ntdef::NULL as winnt::PCWSTR,
-                ntdef::NULL as windef::HWND,
+                &setupapi::GUID_DEVCLASS_BATTERY,
+                ptr::null() as PCWSTR,
+                Foundation::HWND::default(),
                 setupapi::DIGCF_PRESENT | setupapi::DIGCF_DEVICEINTERFACE,
             )
         };
-        if hdev == handleapi::INVALID_HANDLE_VALUE {
-            Err(get_last_error())
+        if hdev == Foundation::INVALID_HANDLE_VALUE {
+            Err(io::Error::last_os_error())
         } else {
             Ok(DeviceIterator {
                 device: hdev,
@@ -51,15 +48,13 @@ impl DeviceIterator {
     }
 
     fn get_interface_data(&self) -> io::Result<setupapi::SP_DEVICE_INTERFACE_DATA> {
-        let mut data = setupapi::SP_DEVICE_INTERFACE_DATA {
-            cbSize: mem::size_of::<setupapi::SP_DEVICE_INTERFACE_DATA>() as u32,
-            ..Default::default()
-        };
+        let mut data = unsafe { mem::zeroed::<setupapi::SP_DEVICE_INTERFACE_DATA>() };
+        data.cbSize = mem::size_of::<setupapi::SP_DEVICE_INTERFACE_DATA>() as u32;
         let result = unsafe {
             setupapi::SetupDiEnumDeviceInterfaces(
                 self.device,
-                ntdef::NULL as *mut setupapi::SP_DEVINFO_DATA,
-                &devguid::GUID_DEVCLASS_BATTERY,
+                ptr::null_mut() as *mut setupapi::SP_DEVINFO_DATA,
+                &setupapi::GUID_DEVCLASS_BATTERY,
                 self.current,
                 &mut data,
             )
@@ -67,7 +62,7 @@ impl DeviceIterator {
 
         // TODO: Add trace
         if result == 0 {
-            Err(get_last_error())
+            Err(io::Error::last_os_error())
         } else {
             Ok(data)
         }
@@ -77,25 +72,27 @@ impl DeviceIterator {
         &self,
         data: &mut setupapi::SP_DEVICE_INTERFACE_DATA,
     ) -> io::Result<InterfaceDetailData> {
-        let mut buf_size: minwindef::DWORD = 0;
+        let mut buf_size = 0;
         unsafe {
             setupapi::SetupDiGetDeviceInterfaceDetailW(
                 self.device,
                 data,
-                ntdef::NULL as setupapi::PSP_DEVICE_INTERFACE_DETAIL_DATA_W,
+                ptr::null_mut() as *mut setupapi::SP_DEVICE_INTERFACE_DETAIL_DATA_W,
                 0,
                 &mut buf_size,
-                0 as setupapi::PSP_DEVINFO_DATA,
+                ptr::null_mut() as *mut setupapi::SP_DEVINFO_DATA,
             )
         };
-        let result = unsafe { errhandlingapi::GetLastError() };
-        if result != winerror::ERROR_INSUFFICIENT_BUFFER {
+        let result = unsafe { Foundation::GetLastError() };
+        if result != Foundation::ERROR_INSUFFICIENT_BUFFER {
             return Err(io::Error::from_raw_os_error(result as i32));
         }
 
         let pdidd = unsafe {
-            winbase::LocalAlloc(minwinbase::LPTR, buf_size as basetsd::SIZE_T)
-                as setupapi::PSP_DEVICE_INTERFACE_DETAIL_DATA_W
+            windows_sys::Win32::System::Memory::LocalAlloc(
+                windows_sys::Win32::System::Memory::LPTR,
+                buf_size as _,
+            ) as *mut setupapi::SP_DEVICE_INTERFACE_DETAIL_DATA_W
         };
         unsafe {
             (*pdidd).cbSize = mem::size_of::<setupapi::SP_DEVICE_INTERFACE_DETAIL_DATA_W>() as u32;
@@ -104,13 +101,13 @@ impl DeviceIterator {
             setupapi::SetupDiGetDeviceInterfaceDetailW(
                 self.device,
                 data,
-                pdidd,
+                pdidd as *mut setupapi::SP_DEVICE_INTERFACE_DETAIL_DATA_W,
                 buf_size,
                 &mut buf_size,
-                0 as setupapi::PSP_DEVINFO_DATA,
+                ptr::null_mut() as *mut setupapi::SP_DEVINFO_DATA,
             )
         };
-        let result = unsafe { errhandlingapi::GetLastError() };
+        let result = unsafe { Foundation::GetLastError() };
         if result != 0 {
             return Err(io::Error::from_raw_os_error(result as i32));
         }
@@ -127,43 +124,43 @@ impl DeviceIterator {
         let file = unsafe {
             fileapi::CreateFileW(
                 device_path,
-                winnt::GENERIC_READ | winnt::GENERIC_WRITE,
-                winnt::FILE_SHARE_READ | winnt::FILE_SHARE_WRITE,
-                ntdef::NULL as minwinbase::LPSECURITY_ATTRIBUTES,
+                Foundation::GENERIC_READ | Foundation::GENERIC_WRITE,
+                fileapi::FILE_SHARE_READ | fileapi::FILE_SHARE_WRITE,
+                ptr::null() as *const Security::SECURITY_ATTRIBUTES,
                 fileapi::OPEN_EXISTING,
-                winnt::FILE_ATTRIBUTE_NORMAL,
-                ntdef::NULL,
+                fileapi::FILE_ATTRIBUTE_NORMAL,
+                Foundation::HANDLE::default(),
             )
         };
-        if file == handleapi::INVALID_HANDLE_VALUE {
-            Err(get_last_error())
+        if file == Foundation::INVALID_HANDLE_VALUE {
+            Err(io::Error::last_os_error())
         } else {
             Ok(file.into())
         }
     }
 
-    fn get_tag(&self, handle: &mut Handle) -> io::Result<ioctl::BatteryQueryInformation> {
-        let mut query = ioctl::BatteryQueryInformation::default();
-        let mut wait_timeout: minwindef::DWORD = 0;
-        let mut bytes_returned: minwindef::DWORD = 0;
+    fn get_tag(&self, handle: &mut Handle) -> io::Result<systempower::BATTERY_QUERY_INFORMATION> {
+        let mut query = unsafe { mem::zeroed::<systempower::BATTERY_QUERY_INFORMATION>() };
+        let mut wait_timeout: u32 = 0;
+        let mut bytes_returned: u32 = 0;
         let mut battery_tag = { query.BatteryTag };
 
         let res = unsafe {
             ioapiset::DeviceIoControl(
-                **handle as *mut _ as *mut ctypes::c_void,
-                ioctl::IOCTL_BATTERY_QUERY_TAG,
-                &mut wait_timeout as *mut _ as minwindef::LPVOID,
-                mem::size_of::<minwindef::DWORD>() as minwindef::DWORD,
-                &mut battery_tag as *mut _ as minwindef::LPVOID,
-                mem::size_of::<ntdef::ULONG>() as minwindef::DWORD,
+                handle.0,
+                systempower::IOCTL_BATTERY_QUERY_TAG,
+                &mut wait_timeout as *mut _ as *mut ffi::c_void,
+                mem::size_of_val(&wait_timeout) as _,
+                &mut battery_tag as *mut _ as *mut ffi::c_void,
+                mem::size_of_val(&bytes_returned) as _,
                 &mut bytes_returned as *mut _,
-                ntdef::NULL as minwinbase::LPOVERLAPPED,
+                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
             )
         };
 
         query.BatteryTag = battery_tag;
         if res == 0 || query.BatteryTag == 0 {
-            return Err(get_last_error());
+            return Err(io::Error::last_os_error());
         }
 
         Ok(query)
@@ -181,15 +178,8 @@ impl iter::Iterator for DeviceIterator {
     type Item = DeviceHandle;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut handle = match self.prepare_handle() {
-            Ok(h) => h,
-            Err(_) => return None,
-        };
-
-        let tag = match self.get_tag(&mut handle) {
-            Ok(tag) => tag,
-            Err(_) => return None,
-        };
+        let mut handle = self.prepare_handle().ok()?;
+        let tag = self.get_tag(&mut handle).ok()?;
 
         self.current += 1;
 
@@ -209,146 +199,136 @@ impl Drop for DeviceIterator {
 }
 
 // Our inner representation of the battery device.
-#[derive(Debug)]
 pub struct DeviceHandle {
     //    interface_details: InterfaceDetailData,
     pub handle: Handle,
     // TODO: Carry only `.BatteryTag` field ?
-    pub tag: ioctl::BatteryQueryInformation,
+    pub tag: systempower::BATTERY_QUERY_INFORMATION,
 }
 
 impl DeviceHandle {
     pub fn information(&mut self) -> io::Result<ioctl::BatteryInformation> {
-        let mut query = ioctl::BatteryQueryInformation::default();
+        let mut query = unsafe { mem::zeroed::<systempower::BATTERY_QUERY_INFORMATION>() };
         query.BatteryTag = self.tag.BatteryTag;
-        let mut out = ioctl::BatteryInformation::default();
-        let mut bytes_returned: minwindef::DWORD = 0;
+        let mut out = MaybeUninit::<systempower::BATTERY_INFORMATION>::uninit();
+        let mut bytes_returned = 0u32;
 
         let res = unsafe {
             ioapiset::DeviceIoControl(
-                *self.handle,
-                ioctl::IOCTL_BATTERY_QUERY_INFORMATION,
-                query.deref_mut() as *mut _ as minwindef::LPVOID,
-                // Since wrapper is a newtype struct, `mem::size_of` will be the same as with
-                // underline structure. Yet, this might lead to bug if wrapper structure will change.
-                // TODO: Get memory size of the underline struct directly
-                mem::size_of::<ioctl::BatteryQueryInformation>() as minwindef::DWORD,
-                &mut out as *mut _ as minwindef::LPVOID,
-                mem::size_of::<ioctl::BatteryInformation>() as minwindef::DWORD,
+                self.handle.0,
+                systempower::IOCTL_BATTERY_QUERY_INFORMATION,
+                &mut query as *mut _ as *mut ffi::c_void,
+                mem::size_of::<systempower::BATTERY_QUERY_INFORMATION>() as _,
+                &mut out as *mut _ as *mut ffi::c_void,
+                mem::size_of::<ioctl::BatteryInformation>() as _,
                 &mut bytes_returned as *mut _,
-                ntdef::NULL as minwinbase::LPOVERLAPPED,
+                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
             )
         };
 
         if res == 0 {
-            Err(get_last_error())
+            Err(io::Error::last_os_error())
         } else {
-            Ok(out)
+            Ok(unsafe { out.assume_init() }.into())
         }
     }
 
     pub fn status(&mut self) -> io::Result<ioctl::BatteryStatus> {
-        let mut query = ioctl::BatteryWaitStatus::default();
+        let mut query = unsafe { mem::zeroed::<systempower::BATTERY_WAIT_STATUS>() };
         query.BatteryTag = self.tag.BatteryTag;
-        let mut out = ioctl::BatteryStatus::default();
-        let mut bytes_returned: minwindef::DWORD = 0;
+        let mut out = MaybeUninit::<systempower::BATTERY_STATUS>::uninit();
+        let mut bytes_returned = 0u32;
 
         let res = unsafe {
             ioapiset::DeviceIoControl(
                 *self.handle,
-                ioctl::IOCTL_BATTERY_QUERY_STATUS,
-                query.deref_mut() as *mut _ as minwindef::LPVOID,
-                // Since wrapper is a newtype struct, `mem::size_of` will be the same as with
-                // underline structure. Yet, this might lead to bug if wrapper structure will change.
-                // TODO: Get memory size of the underline struct directly
-                mem::size_of::<ioctl::BatteryWaitStatus>() as minwindef::DWORD,
-                &mut out as *mut _ as minwindef::LPVOID,
-                mem::size_of::<ioctl::BatteryStatus>() as minwindef::DWORD,
+                systempower::IOCTL_BATTERY_QUERY_STATUS,
+                &mut query as *mut _ as *mut ffi::c_void,
+                mem::size_of::<systempower::BATTERY_WAIT_STATUS>() as _,
+                &mut out as *mut _ as *mut ffi::c_void,
+                mem::size_of::<systempower::BATTERY_STATUS>() as _,
                 &mut bytes_returned as *mut _,
-                ntdef::NULL as minwinbase::LPOVERLAPPED,
+                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
             )
         };
 
         if res == 0 {
-            Err(get_last_error())
+            Err(io::Error::last_os_error())
         } else {
-            Ok(out)
+            Ok(unsafe { out.assume_init() }.into())
         }
     }
 
     // 10ths of a degree Kelvin (or decikelvin)
-    pub fn temperature(&mut self) -> io::Result<ntdef::ULONG> {
-        let mut query = ioctl::BatteryQueryInformation::default();
+    pub fn temperature(&mut self) -> io::Result<u64> {
+        let mut query = unsafe { mem::zeroed::<systempower::BATTERY_QUERY_INFORMATION>() };
         query.BatteryTag = self.tag.BatteryTag;
-        query.InformationLevel = ioctl::info_level::BatteryTemperature;
-        let mut out: ntdef::ULONG = 0;
-        let mut bytes_returned: minwindef::DWORD = 0;
+        query.InformationLevel = systempower::BatteryTemperature;
+        let mut out: u64 = 0;
+        let mut bytes_returned: u32 = 0;
 
         let res = unsafe {
             ioapiset::DeviceIoControl(
                 *self.handle,
-                ioctl::IOCTL_BATTERY_QUERY_INFORMATION,
-                query.deref_mut() as *mut _ as minwindef::LPVOID,
+                systempower::IOCTL_BATTERY_QUERY_INFORMATION,
+                &mut query as *mut _ as *mut ffi::c_void,
                 // Since wrapper is a newtype struct, `mem::size_of` will be the same as with
                 // underline structure. Yet, this might lead to bug if wrapper structure will change.
                 // TODO: Get memory size of the underline struct directly
-                mem::size_of::<ioctl::BatteryQueryInformation>() as minwindef::DWORD,
-                &mut out as *mut _ as minwindef::LPVOID,
-                mem::size_of::<ntdef::ULONG>() as minwindef::DWORD,
+                mem::size_of::<systempower::BATTERY_QUERY_INFORMATION>() as _,
+                &mut out as *mut _ as *mut ffi::c_void,
+                mem::size_of_val(&out) as _,
                 &mut bytes_returned as *mut _,
-                ntdef::NULL as minwinbase::LPOVERLAPPED,
+                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
             )
         };
 
         if res == 0 {
-            Err(get_last_error())
+            Err(io::Error::last_os_error())
         } else {
             Ok(out)
         }
     }
 
     pub fn device_name(&mut self) -> io::Result<String> {
-        self.query_string(ioctl::info_level::BatteryDeviceName)
+        self.query_string(systempower::BatteryDeviceName)
     }
 
     pub fn manufacture_name(&mut self) -> io::Result<String> {
-        self.query_string(ioctl::info_level::BatteryManufactureName)
+        self.query_string(systempower::BatteryManufactureName)
     }
 
     pub fn serial_number(&mut self) -> io::Result<String> {
-        self.query_string(ioctl::info_level::BatterySerialNumber)
+        self.query_string(systempower::BatterySerialNumber)
     }
 
     fn query_string(
         &mut self,
-        level: ioctl::info_level::BATTERY_QUERY_INFORMATION_LEVEL,
+        level: systempower::BATTERY_QUERY_INFORMATION_LEVEL,
     ) -> io::Result<String> {
-        let mut query = ioctl::BatteryQueryInformation::default();
+        let mut query = unsafe { mem::zeroed::<systempower::BATTERY_QUERY_INFORMATION>() };
         query.BatteryTag = self.tag.BatteryTag;
         query.InformationLevel = level;
         let mut out = WideString::default();
-        let mut bytes_returned: minwindef::DWORD = 0;
+        let mut bytes_returned = 0u32;
 
         let res = unsafe {
             ioapiset::DeviceIoControl(
                 *self.handle,
-                ioctl::IOCTL_BATTERY_QUERY_INFORMATION,
-                query.deref_mut() as *mut _ as minwindef::LPVOID,
-                // Since wrapper is a newtype struct, `mem::size_of` will be the same as with
-                // underline structure. Yet, this might lead to bug if wrapper structure will change.
-                // TODO: Get memory size of the underline struct directly
-                mem::size_of::<ioctl::BatteryQueryInformation>() as minwindef::DWORD,
-                out.as_mut_ptr() as *mut _ as minwindef::LPVOID,
-                (out.len() * 2) as minwindef::DWORD,
+                systempower::IOCTL_BATTERY_QUERY_INFORMATION,
+                &mut query as *mut _ as *mut ffi::c_void,
+                mem::size_of::<systempower::BATTERY_QUERY_INFORMATION>() as _,
+                out.as_mut_ptr() as *mut _ as *mut ffi::c_void,
+                (out.len() * 2) as _,
                 &mut bytes_returned as *mut _,
-                ntdef::NULL as minwinbase::LPOVERLAPPED,
+                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
             )
         };
 
         out.truncate(bytes_returned as usize);
 
         if res == 0 {
-            Err(get_last_error())
+            Err(io::Error::last_os_error())
         } else {
             Ok(out.into())
         }

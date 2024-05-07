@@ -15,7 +15,7 @@ impl BatteryManager for PowerManager {
     }
 
     fn refresh(&self, device: &mut PowerDevice) -> Result<()> {
-        let battery_tag = device.tag().clone();
+        let battery_tag = *device.tag();
         let di = ffi::DeviceIterator::new()?;
         let handle = di.prepare_handle()?;
         let device_handle = ffi::DeviceHandle {
