@@ -37,11 +37,6 @@ impl Iterator for SysMonIterator {
 
         None
     }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        // Can't predict number of batteries so keep default.
-        (0, None)
-    }
 }
 
 impl BatteryIterator for SysMonIterator {
