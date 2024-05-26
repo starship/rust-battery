@@ -10,7 +10,19 @@ use super::utils::{AsResult, GetResult};
 // In other words it is assumed that if a device exposes energy_full is in ampere hours, it  won't
 // report energy_full_design in watt hours.
 
-// Only tested with an acpibat battery.
+// Only acpibat battery driver is supported.
+// https://www.unitedbsd.com/d/1311-battery-data-such-as-vendor-model/25
+
+// https://github.com/NetBSD/src/blob/trunk/sys/dev/acpi/acpi_bat.c#L101
+const ACPIBAT_PRESENT: usize = 0;
+const ACPIBAT_DVOLTAGE: usize = 1;
+const ACPIBAT_VOLTAGE: usize = 2;
+const ACPIBAT_DCAPACITY: usize = 3;
+const ACPIBAT_LFCCAPACITY: usize = 4;
+const ACPIBAT_CAPACITY: usize = 5;
+const ACPIBAT_CHARGERATE: usize = 6;
+const ACPIBAT_DISCHARGERATE: usize = 7;
+const ACPIBAT_CHARGING: usize = 8;
 
 #[derive(Debug, Default)]
 pub struct EnvSysDevice<'a> {
@@ -29,20 +41,21 @@ pub struct EnvSysDevice<'a> {
 
 impl<'a> EnvSysDevice<'a> {
     pub fn new(name: String, sensor: &'a plist::Value) -> Result<Self> {
+        // We only support acpibat driver.
+        // Early check avoid other evaluations.
+        if !name.starts_with("acpibat") {
+            return Err(Error::invalid_data("Not a valid battery"));
+        }
+
         let sensor_slice = sensor.as_rslice()?;
+
         let mut data = Self {
             name,
             ..Self::default()
         };
 
-        let mut status: bool = true;
-
         // Man 4 envsys from NetBSD 10 tells the last one is a "special dictionary"
         // for device properties.
-
-        // We still want our iterator to start from the beginning.
-        // Thus we need to access the last element before iterating.
-
         if sensor_slice
             .last()
             .ok_or(Error::invalid_data("Cannot read sensor property"))?
@@ -53,50 +66,30 @@ impl<'a> EnvSysDevice<'a> {
             return Err(Error::invalid_data("Not a valid battery"));
         }
 
-        // Loop as nothing tells the slice will be populated in order outside of the last one.
-        for attr_res in sensor_slice {
-            match attr_res.get_rstring("description") {
-                Ok("present") => match Self::val_cur_value(attr_res)? {
-                    1 => continue,
-                    _ => return Err(Error::not_found("Battery absent")),
-                },
-                Ok("design voltage") => data.design_voltage = Self::val_cur_value(attr_res)?,
-                Ok("voltage") => data.voltage = Self::val_cur_value(attr_res)?,
-                Ok("design cap") => {
-                    data.energy_full_design = Self::val_cur_value(attr_res)?;
-                    data.eunit = attr_res.get_rstring("type")?;
-                }
-                Ok("last full cap") => data.energy_full = Self::val_cur_value(attr_res)?,
-                Ok("charge") => {
-                    // max-value in the xml is assumed == to last full cap.
-                    if !Self::validate(attr_res)?.get_rbool("want-percentage")? {
-                        return Err(Error::invalid_data("Not a valid battery"));
-                    }
-                    data.energy = attr_res.get_ru64("cur-value")?;
-                }
-                // No validate on charge and discharge rate, we will look at charging to determine that.
-                Ok("charge rate") => {
-                    data.charge_rate = attr_res.get_ri64("cur-value")?;
-                    data.punit = attr_res.get_rstring("type")?;
-                }
-                Ok("discharge rate") => {
-                    data.discharge_rate = attr_res.get_ri64("cur-value")?;
-                    // Sometimes battery can have problems.
-                    // Read that in https://github.com/NetBSD/src/blob/trunk/sys/dev/acpi/acpi_bat.c line 555.
-                    status = attr_res.get_rstring("state")? == "invalid";
-                }
-                Ok("charging") => {
-                    data.charging = Self::validate(attr_res)?.get_ri64("cur-value")?
-                }
-                Ok(_) => continue,
-                Err(e) => match attr_res.get_rdict("device-properties") {
-                    Ok(_) => continue,
-                    Err(_) => return Err(e),
-                },
-            }
+        if Self::val_cur_value(&sensor_slice[ACPIBAT_PRESENT])? != 1 {
+            return Err(Error::not_found("Battery absent"));
         }
 
-        if data.charging == 0 && status {
+        if !Self::validate(&sensor_slice[ACPIBAT_CAPACITY])?.get_rbool("want-percentage")? {
+            return Err(Error::invalid_data("Not a valid battery"));
+        }
+
+        data.design_voltage = Self::val_cur_value(&sensor_slice[ACPIBAT_DVOLTAGE])?;
+        data.voltage = Self::val_cur_value(&sensor_slice[ACPIBAT_VOLTAGE])?;
+        data.energy_full_design = Self::val_cur_value(&sensor_slice[ACPIBAT_DCAPACITY])?;
+        data.energy_full = Self::val_cur_value(&sensor_slice[ACPIBAT_LFCCAPACITY])?;
+        data.energy = Self::val_cur_value(&sensor_slice[ACPIBAT_CAPACITY])?;
+        data.eunit = sensor_slice[ACPIBAT_DCAPACITY].get_rstring("type")?;
+        data.charge_rate = sensor_slice[ACPIBAT_CHARGERATE].get_ri64("cur-value")?;
+        data.discharge_rate = sensor_slice[ACPIBAT_DISCHARGERATE].get_ri64("cur-value")?;
+        data.punit = sensor_slice[ACPIBAT_CHARGERATE].get_rstring("type")?;
+        data.charging = Self::validate(&sensor_slice[ACPIBAT_CHARGING])?.get_ri64("cur-value")?;
+
+        // Sometimes battery can have problems.
+        // Read that in https://github.com/NetBSD/src/blob/trunk/sys/dev/acpi/acpi_bat.c line 555.
+        if data.charging == 0
+            && sensor_slice[ACPIBAT_DISCHARGERATE].get_rstring("state")? == "invalid"
+        {
             data.charging = -1;
         }
 
