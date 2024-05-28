@@ -28,10 +28,6 @@
 #[macro_use]
 extern crate cfg_if;
 
-#[cfg(target_os = "windows")]
-#[macro_use]
-extern crate winapi;
-
 #[cfg(any(target_os = "dragonfly", target_os = "freebsd"))]
 #[macro_use]
 extern crate nix;
