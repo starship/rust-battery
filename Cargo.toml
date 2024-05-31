@@ -17,9 +17,9 @@ config-schema = ["schemars", "serde"]
 
 [dependencies]
 cfg-if = "1.0"
-num-traits = { version = "0.2.18", default-features = false }
-schemars = { version = "0.8.17", optional = true }
-serde = { version = "1.0.200", features = ["derive"], optional = true }
+num-traits = { version = "0.2.19", default-features = false }
+schemars = { version = "0.8.21", optional = true }
+serde = { version = "1.0.203", features = ["derive"], optional = true }
 uom = { version = "0.36", features = ["autoconvert", "f32", "si"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
@@ -35,7 +35,7 @@ winapi = { version = "~0.3.9", features = ["impl-default", "devguid", "winbase",
 
 [target.'cfg(any(target_os = "dragonfly", target_os = "freebsd"))'.dependencies]
 libc = "~0.2.154"
-nix = { version = "~0.28", default-features = false, features = ["ioctl"] }
+nix = { version = "~0.29.0", default-features = false, features = ["ioctl"] }
 
 [target.'cfg(target_os = "netbsd")'.dependencies]
 libc = "~0.2.154"
