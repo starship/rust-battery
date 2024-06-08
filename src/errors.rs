@@ -78,7 +78,7 @@ impl From<io::Error> for Error {
     }
 }
 
-#[cfg(any(target_os = "dragonfly", target_os = "freebsd"))]
+#[cfg(any(target_os = "dragonfly", target_os = "freebsd", target_os = "netbsd"))]
 mod nix_impl {
     use std::io;
 
@@ -90,6 +90,17 @@ mod nix_impl {
                 source: io::Error::from_raw_os_error(errno as i32),
                 description: Some(errno.desc().into()),
             }
+        }
+    }
+}
+
+#[cfg(target_os = "netbsd")]
+mod plist_impl {
+    use super::Error;
+
+    impl From<plist::Error> for Error {
+        fn from(e: plist::Error) -> Self {
+            e.into()
         }
     }
 }
