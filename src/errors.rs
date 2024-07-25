@@ -100,7 +100,12 @@ mod plist_impl {
 
     impl From<plist::Error> for Error {
         fn from(e: plist::Error) -> Self {
-            e.into()
+            let desc = e.to_string();
+
+            match e.into_io() {
+                Ok(ioerr) => Error::new(ioerr, desc),
+                Err(_) => Error::invalid_data("Problem while processing plist"),
+            }
         }
     }
 }

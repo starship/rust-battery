@@ -1,5 +1,4 @@
 use std::fmt;
-use std::i32;
 
 use core_foundation::base::{CFType, TCFType};
 use core_foundation::boolean::{CFBoolean, CFBooleanGetTypeID};
