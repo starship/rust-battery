@@ -31,7 +31,7 @@ mach = { version = "^0.4.2", package = "mach2" }
 core-foundation = "~0.10.0"
 
 [target.'cfg(target_os = "windows")'.dependencies.windows-sys]
-version = "0.52.0"
+version = "0.59.0"
 features = [
     "Win32_Devices",
     "Win32_Devices_DeviceAndDriverInstallation",

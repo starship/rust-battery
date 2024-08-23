@@ -4,12 +4,12 @@ use std::io;
 use std::iter;
 use std::mem;
 use std::mem::MaybeUninit;
+use std::os::windows::raw::HANDLE;
 use std::ptr;
 
 use windows_sys::core::*;
 use windows_sys::Win32::Devices::DeviceAndDriverInstallation as setupapi;
 use windows_sys::Win32::Foundation;
-use windows_sys::Win32::Security;
 use windows_sys::Win32::Storage::FileSystem as fileapi;
 use windows_sys::Win32::System::Power as systempower;
 use windows_sys::Win32::System::IO as ioapiset;
@@ -33,11 +33,11 @@ impl DeviceIterator {
             setupapi::SetupDiGetClassDevsW(
                 &setupapi::GUID_DEVCLASS_BATTERY,
                 ptr::null() as PCWSTR,
-                Foundation::HWND::default(),
+                ptr::null_mut(),
                 setupapi::DIGCF_PRESENT | setupapi::DIGCF_DEVICEINTERFACE,
             )
         };
-        if hdev == Foundation::INVALID_HANDLE_VALUE {
+        if hdev as HANDLE == Foundation::INVALID_HANDLE_VALUE {
             Err(io::Error::last_os_error())
         } else {
             Ok(DeviceIterator {
@@ -126,10 +126,10 @@ impl DeviceIterator {
                 device_path,
                 Foundation::GENERIC_READ | Foundation::GENERIC_WRITE,
                 fileapi::FILE_SHARE_READ | fileapi::FILE_SHARE_WRITE,
-                ptr::null() as *const Security::SECURITY_ATTRIBUTES,
+                ptr::null(),
                 fileapi::OPEN_EXISTING,
                 fileapi::FILE_ATTRIBUTE_NORMAL,
-                Foundation::HANDLE::default(),
+                ptr::null_mut(),
             )
         };
         if file == Foundation::INVALID_HANDLE_VALUE {
@@ -154,7 +154,7 @@ impl DeviceIterator {
                 &mut battery_tag as *mut _ as *mut ffi::c_void,
                 mem::size_of_val(&bytes_returned) as _,
                 &mut bytes_returned as *mut _,
-                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
+                ptr::null_mut(),
             )
         };
 
@@ -222,7 +222,7 @@ impl DeviceHandle {
                 &mut out as *mut _ as *mut ffi::c_void,
                 mem::size_of::<ioctl::BatteryInformation>() as _,
                 &mut bytes_returned as *mut _,
-                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
+                ptr::null_mut(),
             )
         };
 
@@ -248,7 +248,7 @@ impl DeviceHandle {
                 &mut out as *mut _ as *mut ffi::c_void,
                 mem::size_of::<systempower::BATTERY_STATUS>() as _,
                 &mut bytes_returned as *mut _,
-                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
+                ptr::null_mut(),
             )
         };
 
@@ -279,7 +279,7 @@ impl DeviceHandle {
                 &mut out as *mut _ as *mut ffi::c_void,
                 mem::size_of_val(&out) as _,
                 &mut bytes_returned as *mut _,
-                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
+                ptr::null_mut(),
             )
         };
 
@@ -321,7 +321,7 @@ impl DeviceHandle {
                 out.as_mut_ptr() as *mut _ as *mut ffi::c_void,
                 (out.len() * 2) as _,
                 &mut bytes_returned as *mut _,
-                ptr::null_mut() as *mut windows_sys::Win32::System::IO::OVERLAPPED,
+                ptr::null_mut(),
             )
         };
 
