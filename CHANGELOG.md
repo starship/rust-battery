@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0](https://github.com/starship/rust-battery/compare/v0.9.1...v0.10.0) (2024-08-31)
+
+
+### Features
+
+* replace winapi with windows-sys ([#70](https://github.com/starship/rust-battery/issues/70)) ([7f69364](https://github.com/starship/rust-battery/commit/7f69364803b855d7abc6272c4b02b6499099c60e))
+
 ## [0.9.1](https://github.com/starship/rust-battery/compare/v0.9.0...v0.9.1) (2024-07-25)
 
 
