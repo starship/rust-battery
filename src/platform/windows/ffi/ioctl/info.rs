@@ -2,48 +2,44 @@
 
 #![allow(non_snake_case, clippy::unreadable_literal)]
 
-use std::default::Default;
-use std::mem;
-use std::ops;
-use std::str::{self, FromStr};
-
 use crate::Technology;
-use winapi::shared::ntdef;
+use std::str::FromStr;
+use windows_sys::Win32::System::Power::*;
 
-pub const BATTERY_CAPACITY_RELATIVE: ntdef::ULONG = 0x40000000;
-pub const BATTERY_SYSTEM_BATTERY: ntdef::ULONG = 0x80000000;
+pub struct BatteryInformation(BATTERY_INFORMATION);
 
-STRUCT! {#[cfg_attr(target_arch = "x86", repr(packed))] #[derive(Debug)] struct BATTERY_INFORMATION {
-    Capabilities: ntdef::ULONG,
-    Technology: ntdef::UCHAR,
-    Reserved: [ntdef::UCHAR; 3],
-    Chemistry: [ntdef::UCHAR; 4],
-    DesignedCapacity: ntdef::ULONG, // mWh
-    FullChargedCapacity: ntdef::ULONG, // mWh
-    DefaultAlert1: ntdef::ULONG,
-    DefaultAlert2: ntdef::ULONG,
-    CriticalBias: ntdef::ULONG,
-    CycleCount: ntdef::ULONG,
-}}
-
-impl Default for BATTERY_INFORMATION {
-    #[inline]
+impl Default for BatteryInformation {
     fn default() -> Self {
-        unsafe { mem::zeroed() }
+        Self(unsafe { std::mem::zeroed() })
     }
 }
 
-#[derive(Debug, Default)]
-pub struct BatteryInformation(BATTERY_INFORMATION);
+impl std::fmt::Debug for BatteryInformation {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        f.debug_struct("BatteryInformation")
+            .field("Capabilities", &self.0.Capabilities)
+            .field("Technology", &self.technology())
+            .field("DesignedCapacity", &self.0.DesignedCapacity)
+            .field("FullChargedCapacity", &self.0.FullChargedCapacity)
+            .field("CycleCount", &self.0.CycleCount)
+            .finish()
+    }
+}
 
-impl ops::Deref for BatteryInformation {
+impl From<BATTERY_INFORMATION> for BatteryInformation {
+    fn from(info: BATTERY_INFORMATION) -> Self {
+        Self(info)
+    }
+}
+
+impl std::ops::Deref for BatteryInformation {
     type Target = BATTERY_INFORMATION;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
-impl ops::DerefMut for BatteryInformation {
+impl std::ops::DerefMut for BatteryInformation {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
@@ -61,8 +57,8 @@ impl BatteryInformation {
     }
 
     pub fn technology(&self) -> Technology {
-        let raw = unsafe { str::from_utf8_unchecked(&self.0.Chemistry) };
-        match Technology::from_str(raw) {
+        let raw = String::from_utf8_lossy(&self.0.Chemistry);
+        match Technology::from_str(&raw) {
             Ok(tech) => tech,
             Err(_) => Technology::Unknown,
         }
