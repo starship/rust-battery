@@ -38,8 +38,14 @@ pub trait DataSource: Debug + 'static {
     /// kIOPMPSMaxCapacityKey, mAh
     fn max_capacity(&self) -> ElectricCharge;
 
+    /// Returns raw value if available, otherwise uses the regular one.
+    fn max_capacity_raw(&self) -> ElectricCharge;
+
     /// kIOPMPSCurrentCapacityKey, mAh
     fn current_capacity(&self) -> ElectricCharge;
+
+    /// Returns raw value if available, otherwise uses the regular one.
+    fn current_capacity_raw(&self) -> ElectricCharge;
 
     /// kIOPMPSBatteryTemperatureKey
     fn temperature(&self) -> Option<ThermodynamicTemperature>;
@@ -96,8 +102,16 @@ where
         (**self).max_capacity()
     }
 
+    fn max_capacity_raw(&self) -> ElectricCharge {
+        (**self).max_capacity_raw()
+    }
+
     fn current_capacity(&self) -> ElectricCharge {
         (**self).current_capacity()
+    }
+
+    fn current_capacity_raw(&self) -> ElectricCharge {
+        (**self).current_capacity_raw()
     }
 
     fn temperature(&self) -> Option<ThermodynamicTemperature> {

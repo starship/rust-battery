@@ -13,7 +13,9 @@ use std::str;
 use super::traits::DataSource;
 use crate::platform::traits::BatteryDevice;
 use crate::types::{State, Technology};
-use crate::units::{ElectricPotential, Energy, Power, ThermodynamicTemperature, Time};
+use crate::units::{
+    Bound, ElectricPotential, Energy, Power, Ratio, ThermodynamicTemperature, Time,
+};
 use crate::Result;
 
 pub struct IoKitDevice {
@@ -32,11 +34,11 @@ impl IoKitDevice {
 
 impl BatteryDevice for IoKitDevice {
     fn energy(&self) -> Energy {
-        self.source.current_capacity() * self.source.voltage()
+        self.source.current_capacity_raw() * self.source.voltage()
     }
 
     fn energy_full(&self) -> Energy {
-        self.source.max_capacity() * self.source.voltage()
+        self.source.max_capacity_raw() * self.source.voltage()
     }
 
     fn energy_full_design(&self) -> Energy {
@@ -45,6 +47,12 @@ impl BatteryDevice for IoKitDevice {
 
     fn energy_rate(&self) -> Power {
         self.source.amperage() * self.source.voltage()
+    }
+
+    fn state_of_charge(&self) -> Ratio {
+        // It it possible to get values greater that `1.0`, which is logical nonsense,
+        // forcing the value to be in `0.0..=1.0` range
+        (self.source.current_capacity() / self.source.max_capacity()).into_bounded()
     }
 
     fn state(&self) -> State {
