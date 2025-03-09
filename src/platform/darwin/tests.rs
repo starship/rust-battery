@@ -57,7 +57,15 @@ impl DataSource for TestDataSource {
         milliampere_hour!(self.max_capacity)
     }
 
+    fn max_capacity_raw(&self) -> ElectricCharge {
+        milliampere_hour!(self.max_capacity)
+    }
+
     fn current_capacity(&self) -> ElectricCharge {
+        milliampere_hour!(self.current_capacity)
+    }
+
+    fn current_capacity_raw(&self) -> ElectricCharge {
         milliampere_hour!(self.current_capacity)
     }
 

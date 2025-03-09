@@ -48,6 +48,8 @@ pub struct InstantData {
     design_capacity: Option<ElectricCharge>,
     max_capacity: Option<ElectricCharge>,
     current_capacity: Option<ElectricCharge>,
+    max_capacity_raw: Option<ElectricCharge>,
+    current_capacity_raw: Option<ElectricCharge>,
     temperature: Option<ThermodynamicTemperature>,
     cycle_count: Option<u32>,
     time_remaining: Option<Time>,
@@ -64,11 +66,16 @@ impl InstantData {
             design_capacity: Self::get_u32(props, DESIGN_CAPACITY_KEY)
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
-            max_capacity: Self::get_u32(props, MAX_CAPACITY_KEY_RAW)
-                .or_else(|_| Self::get_u32(props, MAX_CAPACITY_KEY))
+            max_capacity: Self::get_u32(props, MAX_CAPACITY_KEY)
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
-            current_capacity: Self::get_u32(props, CURRENT_CAPACITY_KEY_RAW)
+            current_capacity: Self::get_u32(props, CURRENT_CAPACITY_KEY)
+                .ok()
+                .map(|capacity| milliampere_hour!(capacity)),
+            max_capacity_raw: Self::get_u32(props, MAX_CAPACITY_KEY_RAW)
+                .ok()
+                .map(|capacity| milliampere_hour!(capacity)),
+            current_capacity_raw: Self::get_u32(props, CURRENT_CAPACITY_KEY_RAW)
                 .or_else(|_| Self::get_u32(props, CURRENT_CAPACITY_KEY))
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
@@ -214,6 +221,20 @@ impl DataSource for PowerSource {
 
     fn design_capacity(&self) -> ElectricCharge {
         self.data.design_capacity.unwrap_or_default()
+    }
+
+    fn max_capacity_raw(&self) -> ElectricCharge {
+        self.data
+            .max_capacity_raw
+            .or(self.data.max_capacity)
+            .unwrap_or_default()
+    }
+
+    fn current_capacity_raw(&self) -> ElectricCharge {
+        self.data
+            .current_capacity_raw
+            .or(self.data.current_capacity)
+            .unwrap_or_default()
     }
 
     fn max_capacity(&self) -> ElectricCharge {

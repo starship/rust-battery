@@ -20,6 +20,7 @@ allow = [
   "Apache-2.0",
   "ISC",
   "MIT",
+  "Unicode-3.0",
   "Unicode-DFS-2016",
 ]
 confidence-threshold = 0.8
