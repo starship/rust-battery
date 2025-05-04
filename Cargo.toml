@@ -47,11 +47,11 @@ features = [
 
 [target.'cfg(any(target_os = "dragonfly", target_os = "freebsd"))'.dependencies]
 libc = "~0.2.170"
-nix = { version = "~0.29.0", default-features = false, features = ["ioctl"] }
+nix = { version = "~0.30.1", default-features = false, features = ["ioctl"] }
 
 [target.'cfg(target_os = "netbsd")'.dependencies]
 libc = "~0.2.170"
-nix = { version = "~0.29.0", default-features = false, features = ["ioctl", "mman"] }
+nix = { version = "~0.30.1", default-features = false, features = ["ioctl", "mman"] }
 plist = "~1.7.1"
 
 [dev-dependencies]
