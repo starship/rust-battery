@@ -1,5 +1,3 @@
-use std::fs;
-
 use approx::assert_abs_diff_eq;
 
 use super::super::SysFsDevice;
@@ -13,7 +11,7 @@ use crate::{State, Technology};
 // especially when people are so gracious to provide
 // the test data.
 #[test]
-fn test_issue_28() {
+fn test_issue_28() -> std::io::Result<()> {
     let root = sysfs_test_suite!(
         "charge_full_design" => 3600000,
         "serial_number" => "41167",
@@ -33,8 +31,8 @@ fn test_issue_28() {
         "capacity_level" => "Normal"
     );
 
-    let path = root.into_path();
-    let device = SysFsDevice::try_from(path.clone());
+    let path = root.path();
+    let device = SysFsDevice::try_from(path.to_owned());
 
     assert!(device.is_ok());
     let device = device.unwrap();
@@ -54,5 +52,5 @@ fn test_issue_28() {
     assert_abs_diff_eq!(device.energy_rate().value, 0.0);
     assert_abs_diff_eq!(device.voltage().value, 10.663);
 
-    fs::remove_dir_all(path).unwrap();
+    root.close()
 }
