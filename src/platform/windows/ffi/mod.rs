@@ -53,7 +53,7 @@ impl DeviceIterator {
         let result = unsafe {
             setupapi::SetupDiEnumDeviceInterfaces(
                 self.device,
-                ptr::null_mut() as *mut setupapi::SP_DEVINFO_DATA,
+                ptr::null_mut(),
                 &setupapi::GUID_DEVCLASS_BATTERY,
                 self.current,
                 &mut data,
@@ -77,10 +77,10 @@ impl DeviceIterator {
             setupapi::SetupDiGetDeviceInterfaceDetailW(
                 self.device,
                 data,
-                ptr::null_mut() as *mut setupapi::SP_DEVICE_INTERFACE_DETAIL_DATA_W,
+                ptr::null_mut(),
                 0,
                 &mut buf_size,
-                ptr::null_mut() as *mut setupapi::SP_DEVINFO_DATA,
+                ptr::null_mut(),
             )
         };
         let result = unsafe { Foundation::GetLastError() };
@@ -101,10 +101,10 @@ impl DeviceIterator {
             setupapi::SetupDiGetDeviceInterfaceDetailW(
                 self.device,
                 data,
-                pdidd as *mut setupapi::SP_DEVICE_INTERFACE_DETAIL_DATA_W,
+                pdidd,
                 buf_size,
                 &mut buf_size,
-                ptr::null_mut() as *mut setupapi::SP_DEVINFO_DATA,
+                ptr::null_mut(),
             )
         };
         let result = unsafe { Foundation::GetLastError() };
