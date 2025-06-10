@@ -54,18 +54,9 @@ impl PowerDevice {
             return Ok(None);
         }
 
-        let device_name = match handle.device_name() {
-            Ok(name) => Some(name),
-            Err(_) => None,
-        };
-        let manufacturer = match handle.manufacture_name() {
-            Ok(name) => Some(name),
-            Err(_) => None,
-        };
-        let serial_number = match handle.serial_number() {
-            Ok(value) => Some(value),
-            Err(_) => None,
-        };
+        let device_name = handle.device_name().ok();
+        let manufacturer = handle.manufacture_name().ok();
+        let serial_number = handle.serial_number().ok();
 
         let mut device = PowerDevice {
             tag: handle.tag,

@@ -1,5 +1,3 @@
-use std::fs;
-
 use approx::assert_abs_diff_eq;
 
 use super::super::SysFsDevice;
@@ -13,7 +11,7 @@ use crate::{State, Technology};
 //
 // See https://github.com/starship/starship/issues/613#issuecomment-548873632
 #[test]
-fn test_issue_40() {
+fn test_issue_40() -> std::io::Result<()> {
     let root = sysfs_test_suite!(
         "capacity" => 83,
         "charge_counter" => 2584,
@@ -27,8 +25,8 @@ fn test_issue_40() {
         "voltage_now" => 11829000
     );
 
-    let path = root.into_path();
-    let device = SysFsDevice::try_from(path.clone());
+    let path = root.path();
+    let device = SysFsDevice::try_from(path.to_owned());
 
     assert!(device.is_ok());
     let device = device.unwrap();
@@ -65,5 +63,5 @@ fn test_issue_40() {
     //    cycle_count: None,
     //}
 
-    fs::remove_dir_all(path).unwrap();
+    root.close()
 }
