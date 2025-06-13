@@ -16,14 +16,18 @@ jobs:
       matrix:
         toolchain:
           - stable
-          - 1.74.0 # MSRV
+          - 1.74.1 # MSRV
         target:
           - i686-unknown-linux-gnu
           - x86_64-unknown-linux-gnu
           - x86_64-unknown-linux-musl
+          - aarch64-unknown-linux-gnu
+          - aarch64-unknown-linux-musl
           - i686-pc-windows-msvc
           - x86_64-pc-windows-msvc
+          - aarch64-pc-windows-msvc
           - x86_64-apple-darwin
+          - aarch64-apple-darwin
         include:
           - target: i686-unknown-linux-gnu
             os: ubuntu-latest
@@ -35,8 +39,16 @@ jobs:
             os: windows-latest
           - target: x86_64-pc-windows-msvc
             os: windows-latest
+          - target: aarch64-pc-windows-msvc
+            os: windows-11-arm
           - target: x86_64-apple-darwin
+            os: macos-13
+          - target: aarch64-apple-darwin
             os: macos-latest
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-24.04-arm
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4.2.2
@@ -44,6 +56,7 @@ jobs:
         with:
           toolchain: ${{ matrix.toolchain }}
           target: ${{ matrix.target }}
+          components: clippy
 
       - uses: Swatinem/rust-cache@v2.7.8
         with:
@@ -77,23 +90,11 @@ jobs:
         target:
           - x86_64-unknown-freebsd
           - x86_64-unknown-netbsd
-          - aarch64-unknown-linux-gnu
-          - aarch64-unknown-linux-musl
-          - aarch64-pc-windows-msvc
-          - aarch64-apple-darwin
         include:
           - target: x86_64-unknown-freebsd
             os: ubuntu-latest
           - target: x86_64-unknown-netbsd
             os: ubuntu-latest
-          - target: aarch64-unknown-linux-gnu
-            os: ubuntu-latest
-          - target: aarch64-unknown-linux-musl
-            os: ubuntu-latest
-          - target: aarch64-pc-windows-msvc
-            os: windows-latest
-          - target: aarch64-apple-darwin
-            os: macos-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4.2.2
