@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.2](https://github.com/starship/rust-battery/compare/v0.10.1...v0.10.2) (2025-06-13)
+
+
+### Bug Fixes
+
+* bump deps & msrv and handle windows clippy warnings ([#95](https://github.com/starship/rust-battery/issues/95)) ([c9a829e](https://github.com/starship/rust-battery/commit/c9a829e3435401a3192471642eb0e36e413fe4c2))
+
 ## [0.10.1](https://github.com/starship/rust-battery/compare/v0.10.0...v0.10.1) (2025-03-14)
 
 
