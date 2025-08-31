@@ -30,7 +30,6 @@ pub trait GetResult {
     fn get_ru64(&self, key: &str) -> Result<u64>;
     fn get_ri64(&self, key: &str) -> Result<i64>;
     fn get_rbool(&self, key: &str) -> Result<bool>;
-    fn get_rslice(&self, key: &str) -> Result<&[plist::Value]>;
     fn get_rstring(&self, key: &str) -> Result<&str>;
 }
 
@@ -64,13 +63,6 @@ impl GetResult for plist::Dictionary {
     }
 
     #[inline]
-    fn get_rslice(&self, key: &str) -> Result<&[plist::Value]> {
-        self.get(key)
-            .ok_or(Error::invalid_data("Cannot convert value to slice"))?
-            .as_rslice()
-    }
-
-    #[inline]
     fn get_rstring(&self, key: &str) -> Result<&str> {
         self.get(key)
             .and_then(|x| x.as_string())
@@ -97,11 +89,6 @@ impl GetResult for plist::Value {
     #[inline]
     fn get_rbool(&self, key: &str) -> Result<bool> {
         self.as_rdict()?.get_rbool(key)
-    }
-
-    #[inline]
-    fn get_rslice(&self, key: &str) -> Result<&[plist::Value]> {
-        self.as_rdict()?.get_rslice(key)
     }
 
     #[inline]
