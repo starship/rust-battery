@@ -52,7 +52,7 @@ nix = { version = "~0.30.1", default-features = false, features = ["ioctl"] }
 [target.'cfg(target_os = "netbsd")'.dependencies]
 libc = "~0.2.174"
 nix = { version = "~0.30.1", default-features = false, features = ["ioctl", "mman"] }
-plist = "~1.7.2"
+plist = "~1.7.4"
 
 [dev-dependencies]
 approx = "0.5.1"
