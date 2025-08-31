@@ -56,4 +56,4 @@ plist = "~1.7.4"
 
 [dev-dependencies]
 approx = "0.5.1"
-tempfile = "^3.20.0"
+tempfile = "^3.21.0"
