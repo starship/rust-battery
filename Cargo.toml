@@ -9,7 +9,7 @@ keywords = ["battery", "linux", "macos", "windows", "freebsd"]
 license = "ISC"
 readme = "README.md"
 repository = "https://github.com/starship/rust-battery"
-rust-version = "1.74"
+rust-version = "1.89"
 description = "Cross-platform information about the notebook batteries"
 
 [features]
