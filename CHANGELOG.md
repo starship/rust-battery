@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.3](https://github.com/starship/rust-battery/compare/v0.10.2...v0.10.3) (2025-09-20)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate schemars to v1 ([#101](https://github.com/starship/rust-battery/issues/101)) ([56b2877](https://github.com/starship/rust-battery/commit/56b2877b2b4e978681184ce11156e986d291eb44))
+
 ## [0.10.2](https://github.com/starship/rust-battery/compare/v0.10.1...v0.10.2) (2025-06-13)
 
 
