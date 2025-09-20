@@ -28,7 +28,7 @@ impl IoMasterPort {
 
     pub fn get_services(&self) -> Result<IoIterator> {
         let service = unsafe {
-            let ret = sys::IOServiceMatching(sys::IOPM_SERVICE_NAME);
+            let ret = sys::IOServiceMatching(sys::IOPM_SERVICE_NAME.as_ptr());
             assert_ne!(ret as *const _, kCFNull);
 
             ret

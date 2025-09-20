@@ -7,6 +7,7 @@ use core_foundation::base::{mach_port_t, CFAllocatorRef};
 use core_foundation::dictionary::{CFDictionaryRef, CFMutableDictionaryRef};
 use libc::c_char;
 use mach::{boolean, kern_return};
+use std::ffi::CStr;
 
 pub type io_object_t = mach_port_t;
 pub type io_registry_entry_t = io_object_t;
@@ -15,7 +16,7 @@ pub type io_iterator_t = io_object_t;
 
 pub type IOOptionBits = u32;
 
-pub const IOPM_SERVICE_NAME: *const c_char = b"IOPMPowerSource\0".as_ptr() as *const c_char;
+pub const IOPM_SERVICE_NAME: &CStr = c"IOPMPowerSource";
 
 extern "C" {
     // https://developer.apple.com/documentation/iokit/kiomasterportdefault
