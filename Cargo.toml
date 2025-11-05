@@ -18,7 +18,7 @@ config-schema = ["schemars", "serde"]
 [dependencies]
 cfg-if = "1.0.4"
 num-traits = { version = "0.2.19", default-features = false }
-schemars = { version = "1.0.5", optional = true }
+schemars = { version = "1.1.0", optional = true }
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 uom = { version = "0.37", features = ["autoconvert", "f32", "si"] }
 
