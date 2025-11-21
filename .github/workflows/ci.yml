@@ -51,7 +51,7 @@ jobs:
             os: ubuntu-24.04-arm
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
@@ -97,7 +97,7 @@ jobs:
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.0
 
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup | Rust
         uses: dtolnay/rust-toolchain@stable
