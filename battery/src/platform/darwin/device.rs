@@ -13,7 +13,7 @@ use std::str;
 use super::traits::DataSource;
 use crate::platform::traits::BatteryDevice;
 use crate::types::{State, Technology};
-use crate::units::{ElectricPotential, Energy, Power, ThermodynamicTemperature, Time};
+use crate::units::{ElectricCharge, ElectricPotential, Energy, Power, ThermodynamicTemperature, Time};
 use crate::Result;
 
 pub struct IoKitDevice {
@@ -32,11 +32,16 @@ impl IoKitDevice {
 
 impl BatteryDevice for IoKitDevice {
     fn energy(&self) -> Energy {
+        println!("Current capacity: {}, max capacity {}, design_capacity {}, amperage {}", self.source.current_capacity().value, self.source.max_capacity().value, self.source.design_capacity().value, self.source.amperage().value);
         self.source.current_capacity() * self.source.voltage()
     }
 
     fn energy_full(&self) -> Energy {
         self.source.max_capacity() * self.source.voltage()
+    }
+
+    fn current_capacity(&self) -> ElectricCharge {
+        self.source.current_capacity()
     }
 
     fn energy_full_design(&self) -> Energy {
