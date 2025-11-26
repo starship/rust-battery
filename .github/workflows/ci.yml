@@ -58,7 +58,7 @@ jobs:
           target: ${{ matrix.target }}
           components: clippy
 
-      - uses: Swatinem/rust-cache@v2.8.1
+      - uses: Swatinem/rust-cache@v2.8.2
         with:
           key: ${{ matrix.target }}
 
@@ -104,7 +104,7 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           target: ${{ matrix.target }}
 
-      - uses: Swatinem/rust-cache@v2.8.1
+      - uses: Swatinem/rust-cache@v2.8.2
         with:
           key: ${{ matrix.target }}
 
