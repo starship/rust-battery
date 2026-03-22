@@ -2,26 +2,13 @@ use std::ffi::CStr;
 use std::fmt;
 use std::fmt::Debug;
 
-use objc2_core_foundation::CFBoolean;
-use objc2_core_foundation::CFDictionary;
-use objc2_core_foundation::CFNumber;
-use objc2_core_foundation::CFRetained;
-use objc2_core_foundation::CFString;
-use objc2_core_foundation::CFType;
-use objc2_io_kit::kIOPMDeviceNameKey;
-use objc2_io_kit::kIOPMFullyChargedKey;
-use objc2_io_kit::kIOPMPSAmperageKey;
-use objc2_io_kit::kIOPMPSBatteryTemperatureKey;
-use objc2_io_kit::kIOPMPSCurrentCapacityKey;
-use objc2_io_kit::kIOPMPSCycleCountKey;
-use objc2_io_kit::kIOPMPSDesignCapacityKey;
-use objc2_io_kit::kIOPMPSExternalConnectedKey;
-use objc2_io_kit::kIOPMPSIsChargingKey;
-use objc2_io_kit::kIOPMPSManufacturerKey;
-use objc2_io_kit::kIOPMPSMaxCapacityKey;
-use objc2_io_kit::kIOPMPSSerialKey;
-use objc2_io_kit::kIOPMPSTimeRemainingKey;
-use objc2_io_kit::kIOPMPSVoltageKey;
+use objc2_core_foundation::{CFBoolean, CFDictionary, CFNumber, CFRetained, CFString, CFType};
+use objc2_io_kit::{
+    kIOPMDeviceNameKey, kIOPMFullyChargedKey, kIOPMPSAmperageKey, kIOPMPSBatteryTemperatureKey,
+    kIOPMPSCurrentCapacityKey, kIOPMPSCycleCountKey, kIOPMPSDesignCapacityKey,
+    kIOPMPSExternalConnectedKey, kIOPMPSIsChargingKey, kIOPMPSManufacturerKey,
+    kIOPMPSMaxCapacityKey, kIOPMPSSerialKey, kIOPMPSTimeRemainingKey, kIOPMPSVoltageKey,
+};
 
 use super::super::traits::DataSource;
 use super::IoObject;
@@ -32,7 +19,6 @@ use crate::{Error, Result};
 
 type Properties = CFDictionary<CFString, CFType>;
 
-// aarch64 means M series chips.
 // MaxCapacity and CurrentCapacity returns percentage in M series chips, ranging from 1 to 100.
 // Have to use AppleRawMaxCapacity and AppleRawCurrentCapacity to get actual mAh.
 // No idea if Intel-chip mac need to be changed as well.
@@ -112,6 +98,8 @@ impl InstantData {
     }
 
     fn get_u32(props: &Properties, raw_key: &CStr) -> Result<u32> {
+        // TODO: We can lose data here actually,
+        // but with currently used keys it seems to be impossible
         Self::get_i32(props, raw_key).map(|n| n as u32)
     }
 

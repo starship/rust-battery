@@ -34,12 +34,10 @@ impl IoMasterPort {
     }
 
     pub fn get_services(&self) -> Result<IoIterator> {
-        let service = unsafe { IOServiceMatching(IOPM_SERVICE_NAME.as_ptr()) }.ok_or(
-            Error::not_found(format!(
-                "Cannot find IOService named {}",
-                IOPM_SERVICE_NAME.to_string_lossy()
-            )),
-        );
+        let service =
+            unsafe { IOServiceMatching(IOPM_SERVICE_NAME.as_ptr()) }.ok_or(Error::not_found(
+                format!("Cannot find IOService named {:?}", IOPM_SERVICE_NAME),
+            ));
 
         let mut iterator = IoIterator::default();
 
