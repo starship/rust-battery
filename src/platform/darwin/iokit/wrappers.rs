@@ -27,6 +27,8 @@ impl IoMasterPort {
         let mut master_port: port::mach_port_t = port::MACH_PORT_NULL;
 
         unsafe {
+            // `IOMasterPort` and `kIOMasterPortDefault` are deprecated with macOS 12.
+            // TODO: replace with `IOMainPort` and `kIOMainPortDefault` respectively.
             kern_try!(IOMasterPort(kIOMasterPortDefault, &mut master_port));
         }
 
