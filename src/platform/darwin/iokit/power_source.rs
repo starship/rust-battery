@@ -1,10 +1,14 @@
+use std::ffi::CStr;
 use std::fmt;
+use std::fmt::Debug;
 
-use core_foundation::base::{CFType, TCFType};
-use core_foundation::boolean::{CFBoolean, CFBooleanGetTypeID};
-use core_foundation::dictionary::CFDictionary;
-use core_foundation::number::{CFNumber, CFNumberGetTypeID};
-use core_foundation::string::{CFString, CFStringGetTypeID};
+use objc2_core_foundation::{CFBoolean, CFDictionary, CFNumber, CFRetained, CFString, CFType};
+use objc2_io_kit::{
+    kIOPMDeviceNameKey, kIOPMFullyChargedKey, kIOPMPSAmperageKey, kIOPMPSBatteryTemperatureKey,
+    kIOPMPSCurrentCapacityKey, kIOPMPSCycleCountKey, kIOPMPSDesignCapacityKey,
+    kIOPMPSExternalConnectedKey, kIOPMPSIsChargingKey, kIOPMPSManufacturerKey,
+    kIOPMPSMaxCapacityKey, kIOPMPSSerialKey, kIOPMPSTimeRemainingKey, kIOPMPSVoltageKey,
+};
 
 use super::super::traits::DataSource;
 use super::IoObject;
@@ -15,28 +19,11 @@ use crate::{Error, Result};
 
 type Properties = CFDictionary<CFString, CFType>;
 
-static FULLY_CHARGED_KEY: &str = "FullyCharged";
-static EXTERNAL_CONNECTED_KEY: &str = "ExternalConnected";
-static IS_CHARGING_KEY: &str = "IsCharging";
-static VOLTAGE_KEY: &str = "Voltage";
-static AMPERAGE_KEY: &str = "Amperage";
-static DESIGN_CAPACITY_KEY: &str = "DesignCapacity";
-
-// aarch64 means M series chips.
 // MaxCapacity and CurrentCapacity returns percentage in M series chips, ranging from 1 to 100.
 // Have to use AppleRawMaxCapacity and AppleRawCurrentCapacity to get actual mAh.
 // No idea if Intel-chip mac need to be changed as well.
-static MAX_CAPACITY_KEY_RAW: &str = "AppleRawMaxCapacity";
-static CURRENT_CAPACITY_KEY_RAW: &str = "AppleRawCurrentCapacity";
-static MAX_CAPACITY_KEY: &str = "MaxCapacity";
-static CURRENT_CAPACITY_KEY: &str = "CurrentCapacity";
-
-static TEMPERATURE_KEY: &str = "Temperature";
-static CYCLE_COUNT_KEY: &str = "CycleCount";
-static TIME_REMAINING_KEY: &str = "TimeRemaining";
-static MANUFACTURER_KEY: &str = "Manufacturer";
-static DEVICE_NAME_KEY: &str = "DeviceName";
-static BATTERY_SERIAL_NUMBER_KEY: &str = "BatterySerialNumber";
+static MAX_CAPACITY_KEY_RAW: &CStr = c"AppleRawMaxCapacity";
+static CURRENT_CAPACITY_KEY_RAW: &CStr = c"AppleRawCurrentCapacity";
 
 #[derive(Debug)]
 pub struct InstantData {
@@ -58,32 +45,32 @@ pub struct InstantData {
 impl InstantData {
     pub fn try_from(props: &Properties) -> Result<InstantData> {
         Ok(Self {
-            fully_charged: Self::get_bool(props, FULLY_CHARGED_KEY).ok(),
-            external_connected: Self::get_bool(props, EXTERNAL_CONNECTED_KEY)?,
-            is_charging: Self::get_bool(props, IS_CHARGING_KEY)?,
-            voltage: millivolt!(Self::get_u32(props, VOLTAGE_KEY)?),
-            amperage: milliampere!(Self::get_i32(props, AMPERAGE_KEY)?.abs()),
-            design_capacity: Self::get_u32(props, DESIGN_CAPACITY_KEY)
+            fully_charged: Self::get_bool(props, kIOPMFullyChargedKey).ok(),
+            external_connected: Self::get_bool(props, kIOPMPSExternalConnectedKey)?,
+            is_charging: Self::get_bool(props, kIOPMPSIsChargingKey)?,
+            voltage: millivolt!(Self::get_u32(props, kIOPMPSVoltageKey)?),
+            amperage: milliampere!(Self::get_i32(props, kIOPMPSAmperageKey)?.abs()),
+            design_capacity: Self::get_u32(props, kIOPMPSDesignCapacityKey)
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
-            max_capacity: Self::get_u32(props, MAX_CAPACITY_KEY)
+            max_capacity: Self::get_u32(props, kIOPMPSMaxCapacityKey)
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
-            current_capacity: Self::get_u32(props, CURRENT_CAPACITY_KEY)
+            current_capacity: Self::get_u32(props, kIOPMPSCurrentCapacityKey)
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
             max_capacity_raw: Self::get_u32(props, MAX_CAPACITY_KEY_RAW)
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
             current_capacity_raw: Self::get_u32(props, CURRENT_CAPACITY_KEY_RAW)
-                .or_else(|_| Self::get_u32(props, CURRENT_CAPACITY_KEY))
+                .or_else(|_| Self::get_u32(props, kIOPMPSCurrentCapacityKey))
                 .ok()
                 .map(|capacity| milliampere_hour!(capacity)),
-            temperature: Self::get_i32(props, TEMPERATURE_KEY)
+            temperature: Self::get_i32(props, kIOPMPSBatteryTemperatureKey)
                 .map(|value| celsius!(value as f32 / 100.0))
                 .ok(),
-            cycle_count: Self::get_u32(props, CYCLE_COUNT_KEY).ok(),
-            time_remaining: Self::get_i32(props, TIME_REMAINING_KEY)
+            cycle_count: Self::get_u32(props, kIOPMPSCycleCountKey).ok(),
+            time_remaining: Self::get_i32(props, kIOPMPSTimeRemainingKey)
                 .ok()
                 .and_then(|val| {
                     if val == i32::MAX {
@@ -95,71 +82,56 @@ impl InstantData {
         })
     }
 
-    fn get_bool(props: &Properties, raw_key: &'static str) -> Result<bool> {
-        let key = CFString::from_static_string(raw_key);
+    fn get_bool(props: &Properties, raw_key: &CStr) -> Result<bool> {
+        let key_str = raw_key
+            .to_str()
+            .map_err(|e| Error::invalid_data(e.to_string()))?;
 
-        props
-            .find(&key)
-            .and_then(|value_ref| {
-                unsafe {
-                    debug_assert!(value_ref.type_of() == CFBooleanGetTypeID());
-                }
+        let key = CFString::from_str(key_str);
+        let value = props
+            .get(&key)
+            .ok_or(Error::not_found(key_str.to_string()))?;
 
-                value_ref.downcast::<CFBoolean>()
-            })
-            .map(Into::into)
-            .ok_or_else(|| Error::not_found(raw_key))
+        CFRetained::downcast::<CFBoolean>(value)
+            .map(|b| b.as_bool())
+            .map_err(|e| Error::invalid_data(format!("{:?} is not a valid bool value", e)))
     }
 
-    fn get_u32(props: &Properties, raw_key: &'static str) -> Result<u32> {
-        let key = CFString::from_static_string(raw_key);
-
-        props
-            .find(&key)
-            .and_then(|value_ref| {
-                unsafe {
-                    debug_assert!(value_ref.type_of() == CFNumberGetTypeID());
-                }
-
-                value_ref.downcast::<CFNumber>()
-            })
-            // TODO: We can lose data here actually,
-            // but with currently used keys it seems to be impossible
-            .and_then(|number| number.to_i32())
-            .map(|value| value as u32)
-            .ok_or_else(|| Error::not_found(raw_key))
+    fn get_u32(props: &Properties, raw_key: &CStr) -> Result<u32> {
+        // TODO: We can lose data here actually,
+        // but with currently used keys it seems to be impossible
+        Self::get_i32(props, raw_key).map(|n| n as u32)
     }
 
-    fn get_i32(props: &Properties, raw_key: &'static str) -> Result<i32> {
-        let key = CFString::from_static_string(raw_key);
+    fn get_i32(props: &Properties, raw_key: &CStr) -> Result<i32> {
+        let key_str = raw_key
+            .to_str()
+            .map_err(|e| Error::invalid_data(e.to_string()))?;
 
-        props
-            .find(&key)
-            .and_then(|value_ref| {
-                unsafe {
-                    debug_assert!(value_ref.type_of() == CFNumberGetTypeID());
-                }
+        let key = CFString::from_str(key_str);
+        let value = props
+            .get(&key)
+            .ok_or(Error::not_found(key_str.to_string()))?;
 
-                value_ref.downcast::<CFNumber>()
-            })
-            .and_then(|number| number.to_i32())
-            .ok_or_else(|| Error::not_found(raw_key))
+        CFRetained::downcast::<CFNumber>(value)
+            .map_err(|e| Error::invalid_data(format!("{:?} is not a valid number value", e)))?
+            .as_i32()
+            .ok_or(Error::invalid_data("Cannot convert number to i32"))
     }
 
-    fn get_string(props: &Properties, raw_key: &'static str) -> Result<String> {
-        let key = CFString::from_static_string(raw_key);
+    fn get_string(props: &Properties, raw_key: &CStr) -> Result<String> {
+        let key_str = raw_key
+            .to_str()
+            .map_err(|e| Error::invalid_data(e.to_string()))?;
 
-        props
-            .find(&key)
-            .and_then(|value_ref| {
-                unsafe {
-                    debug_assert!(value_ref.type_of() == CFStringGetTypeID());
-                }
+        let key = CFString::from_str(key_str);
+        let value = props
+            .get(&key)
+            .ok_or(Error::not_found(key_str.to_string()))?;
 
-                value_ref.downcast::<CFString>()
-            })
-            .map(|cf_string| cf_string.to_string())
-            .ok_or_else(|| Error::not_found(raw_key))
+        CFRetained::downcast::<CFString>(value)
+            .map(|s| s.to_string())
+            .map_err(|e| Error::invalid_data(format!("{:?} is not a valid string value", e)))
     }
 }
 
@@ -177,9 +149,9 @@ impl PowerSource {
         let props = io_obj.properties()?;
         let data = InstantData::try_from(&props)?;
 
-        let manufacturer = InstantData::get_string(&props, MANUFACTURER_KEY).ok();
-        let device_name = InstantData::get_string(&props, DEVICE_NAME_KEY).ok();
-        let serial_number = InstantData::get_string(&props, BATTERY_SERIAL_NUMBER_KEY).ok();
+        let manufacturer = InstantData::get_string(&props, kIOPMPSManufacturerKey).ok();
+        let device_name = InstantData::get_string(&props, kIOPMDeviceNameKey).ok();
+        let serial_number = InstantData::get_string(&props, kIOPMPSSerialKey).ok();
 
         Ok(PowerSource {
             object: io_obj,
