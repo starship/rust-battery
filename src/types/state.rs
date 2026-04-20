@@ -21,6 +21,7 @@ pub enum State {
     Discharging,
     Empty,
     Full,
+    LimitedFull, // when charge limit is set and the battery already reached the limitation
 }
 
 impl str::FromStr for State {
@@ -28,7 +29,6 @@ impl str::FromStr for State {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: Support strings that starts with `\0`
-        // TODO: Support `not charging` value
         // Ref: `up_device_supply_get_state` function at
         //https://gitlab.freedesktop.org/upower/upower/blob/master/src/linux/up-device-supply.c#L452
         match s {
@@ -37,6 +37,7 @@ impl str::FromStr for State {
             _ if s.eq_ignore_ascii_case("Full") => Ok(State::Full),
             _ if s.eq_ignore_ascii_case("Charging") => Ok(State::Charging),
             _ if s.eq_ignore_ascii_case("Discharging") => Ok(State::Discharging),
+            _ if s.eq_ignore_ascii_case("Not Charging") => Ok(State::LimitedFull),
             _ => Err(io::Error::from(io::ErrorKind::InvalidData)),
         }
     }
@@ -49,6 +50,7 @@ impl fmt::Display for State {
             State::Charging => "charging",
             State::Discharging => "discharging",
             State::Empty => "empty",
+            State::LimitedFull => "not charging",
             State::Full => "full",
         };
 
