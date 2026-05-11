@@ -1,33 +1,56 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        // stripped-down config:recommended
-        ":prHourlyLimit2",
-        ":prConcurrentLimit10",
-        "group:monorepos",
-        "group:recommended",
-        "replacements:all",
-        "workarounds:all",
+    $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+    extends: [
+        'config:best-practices',
+        'security:openssf-scorecard',
         // automerge minor updates
-        ":automergeMinor",
-        ":automergeBranch"
+        ':automergeMinor',
+        ':automergeBranch',
     ],
-    "labels": ["📦 dependencies"],
-    "semanticCommits": "enabled",
-    "semanticCommitType": "build",
-    "rangeStrategy": "bump",
-    "rebaseWhen": "conflicted",
-    // custom regex update managers
-    "regexManagers": [
-        {
-            "fileMatch": ["(^|\\/)\\.?dprint.json"],
-            "matchStrings": ["\"https://github.com/(?<depName>.+)/releases/download/(?<currentValue>.+)/plugin.wasm\""],
-            "datasourceTemplate": "github-releases"
-        },
-        {
-            "fileMatch": ["^(workflow-templates|\\.github\\/workflows)\\/[^/]+\\.ya?ml$"],
-            "matchStrings": ["cargo install.*--version (?<currentValue>\\S+).*\\s(?<depName>\\S+)"],
-            "datasourceTemplate": "crate"
-        }
-    ]
+    ignorePresets: [
+        ':dependencyDashboard',
+        ':semanticPrefixFixDepsChoreOthers',
+    ],
+    labels: [
+        '📦 dependencies',
+    ],
+    minimumReleaseAge: '4 days',
+    semanticCommits: 'enabled',
+    semanticCommitType: 'build',
+    rangeStrategy: 'bump',
+    rebaseWhen: 'conflicted',
+    packageRules: [
+        // Avoid frequent updates due to pinned digest values in GitHub Actions
+	    {
+	        matchDepTypes: [
+	            'action',
+	        ],
+	        extends: [
+	            'schedule:weekly',
+	        ],
+	    },
+	],
+    // custom update managers
+    customManagers: [
+	    {
+	        customType: 'regex',
+	        managerFilePatterns: [
+	            '/(^|\\/)\\.?dprint.json/',
+	        ],
+	        matchStrings: [
+	            '"https://github.com/(?<depName>.+)/releases/download/(?<currentValue>.+)/plugin.wasm"',
+	        ],
+	        datasourceTemplate: 'github-releases',
+	    },
+	    {
+	        customType: 'regex',
+	        managerFilePatterns: [
+	            '/^(workflow-templates|\\.github\\/workflows)\\/[^/]+\\.ya?ml$/',
+	        ],
+	        matchStrings: [
+	            'cargo install.*--version (?<currentValue>\\S+).*\\s(?<depName>\\S+)',
+	        ],
+	        datasourceTemplate: 'crate',
+	    },
+    ],
 }
