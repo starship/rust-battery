@@ -1,6 +1,6 @@
 [package]
 name = "starship-battery"
-version = "0.11.0" # remember to update html_root_url
+version = "0.11.1"
 authors = ["Starship Contributors"]
 build = "build.rs"
 categories = ["os"]

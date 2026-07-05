@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.1](https://github.com/starship/rust-battery/compare/v0.11.0...v0.11.1) - 2026-07-05
+
+### Fixed
+
+- Bump plist to ~1.10.0 on netbsd ([#150](https://github.com/starship/rust-battery/pull/150))
+
+### Other
+
+- *(deps)* update actions/checkout action to v7 ([#148](https://github.com/starship/rust-battery/pull/148))
+- *(deps)* update taiki-e/install-action action to v2.82.0
+- *(deps)* update taiki-e/install-action action to v2.81.10 ([#147](https://github.com/starship/rust-battery/pull/147))
+- *(deps)* update release-plz/action action to v0.5.130
+- *(deps)* update taiki-e/install-action action to v2.81.3 ([#146](https://github.com/starship/rust-battery/pull/146))
+- *(deps)* update zizmorcore/zizmor-action action to v0.5.6 ([#145](https://github.com/starship/rust-battery/pull/145))
+- *(deps)* update actions/checkout action to v6.0.3
+- harden gha setup and move to release-plz ([#142](https://github.com/starship/rust-battery/pull/142))
+- *(deps)* update actions/checkout action to v6.0.3
+- *(deps)* update embarkstudios/cargo-deny-action action to v2.0.20
+- *(deps)* update embarkstudios/cargo-deny-action action to v2.0.19
+- *(deps)* update rust crate nix to ~0.31.3 ([#141](https://github.com/starship/rust-battery/pull/141))
+- *(deps)* update embarkstudios/cargo-deny-action action to v2.0.18
+- *(deps)* update rust crate plist to ~1.9.0
+- *(deps)* update rust crate libc to v0.2.186
+- *(deps)* update embarkstudios/cargo-deny-action action to v2.0.17
+- *(deps)* update rust crate libc to v0.2.185
+- *(deps)* update embarkstudios/cargo-deny-action action to v2.0.16
+
 ## [0.11.0](https://github.com/starship/rust-battery/compare/v0.10.3...v0.11.0) (2026-04-03)
 
 
