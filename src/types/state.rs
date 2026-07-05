@@ -50,7 +50,7 @@ impl fmt::Display for State {
             State::Charging => "charging",
             State::Discharging => "discharging",
             State::Empty => "empty",
-            State::Paused => "not charging",
+            State::Paused => "paused",
             State::Full => "full",
         };
 
