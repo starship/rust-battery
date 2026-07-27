@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0](https://github.com/starship/rust-battery/compare/v0.11.1...v0.12.0) - 2026-07-27
+
+### Added
+
+- add support for paused charging status on linux ([#139](https://github.com/starship/rust-battery/pull/139))
+
+### Other
+
+- *(deps)* update zizmorcore/zizmor-action action to v0.5.7 ([#151](https://github.com/starship/rust-battery/pull/151))
+- *(deps)* update taiki-e/install-action action to v2.82.7
+
 ## [0.11.1](https://github.com/starship/rust-battery/compare/v0.11.0...v0.11.1) - 2026-07-05
 
 ### Fixed
