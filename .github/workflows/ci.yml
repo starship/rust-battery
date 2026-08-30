@@ -70,7 +70,7 @@ jobs:
 
       - name: Setup | Install cross [Linux]
         if: matrix.os == 'ubuntu-latest'
-        uses: taiki-e/install-action@16b05812d776ae1dfaabc8277e421fb6d2506419 # v2.82.7
+        uses: taiki-e/install-action@fcf5432d9f50d67e37ee6e29bdb7a224ff67b4a7 # v2.86.8
         with:
           tool: cross
 
@@ -121,7 +121,7 @@ jobs:
 
       - name: Setup | Install cross [Linux]
         if: matrix.os == 'ubuntu-latest'
-        uses: taiki-e/install-action@16b05812d776ae1dfaabc8277e421fb6d2506419 # v2.82.7
+        uses: taiki-e/install-action@fcf5432d9f50d67e37ee6e29bdb7a224ff67b4a7 # v2.86.8
         with:
           tool: cross
 
