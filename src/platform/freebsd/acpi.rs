@@ -113,9 +113,9 @@ impl AcpiBif {
     }
 
     fn get_string(&self, bytes: &[u8]) -> Option<String> {
-        let striped = match bytes.iter().position(|x| *x == 0x00) {
-            Some(pos) => &bytes[..=pos],
-            None => return None,
+        let striped = {
+            let pos = bytes.iter().position(|x| *x == 0x00)?;
+            &bytes[..=pos]
         };
 
         match CStr::from_bytes_with_nul(striped) {
