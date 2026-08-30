@@ -15,18 +15,15 @@ impl Iterator for PowerIterator {
     type Item = Result<PowerDevice>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        loop {
-            match self.inner.next() {
-                None => return None,
-                Some(handle) => {
-                    match PowerDevice::try_from(handle) {
-                        Ok(Some(device)) => return Some(Ok(device)),
-                        Ok(None) => continue,
-                        Err(e) => return Some(Err(e)),
-                    };
-                }
-            }
+        for handle in &mut self.inner {
+            match PowerDevice::try_from(handle) {
+                Ok(Some(device)) => return Some(Ok(device)),
+                Ok(None) => continue,
+                Err(e) => return Some(Err(e)),
+            };
         }
+
+        None
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {

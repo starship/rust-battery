@@ -15,26 +15,23 @@ impl Iterator for IoCtlIterator {
     type Item = Result<IoCtlDevice>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        loop {
-            match self.range.next() {
-                None => return None,
-                Some(idx) => {
-                    let bif = self.manager.bif(idx);
-                    let bst = self.manager.bst(idx);
+        for idx in &mut self.range {
+            let bif = self.manager.bif(idx);
+            let bst = self.manager.bst(idx);
 
-                    match (bif, bst) {
-                        (Ok(Some(bif)), Ok(Some(bst))) => {
-                            return Some(Ok(IoCtlDevice::new(idx, bif, bst)));
-                        }
-                        (Err(e), _) => return Some(Err(e)),
-                        (_, Err(e)) => return Some(Err(e)),
-                        // If bif or bst is invalid (`Ok(None)` here),
-                        // silently skipping it, same as FreeBSD does
-                        _ => continue,
-                    }
+            match (bif, bst) {
+                (Ok(Some(bif)), Ok(Some(bst))) => {
+                    return Some(Ok(IoCtlDevice::new(idx, bif, bst)));
                 }
+                (Err(e), _) => return Some(Err(e)),
+                (_, Err(e)) => return Some(Err(e)),
+                // If bif or bst is invalid (`Ok(None)` here),
+                // silently skipping it, same as FreeBSD does
+                _ => continue,
             }
         }
+
+        None
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
