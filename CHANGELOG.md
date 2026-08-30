@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0](https://github.com/starship/rust-battery/compare/v0.11.1...v0.12.0) - 2026-08-30
+
+### Added
+
+- add support for paused charging status on linux ([#139](https://github.com/starship/rust-battery/pull/139))
+
+### Other
+
+- *(deps)* update rust crate libc to v0.2.189 ([#154](https://github.com/starship/rust-battery/pull/154))
+- *(deps)* update swatinem/rust-cache action to v2.9.2 ([#162](https://github.com/starship/rust-battery/pull/162))
+- *(deps)* update zizmorcore/zizmor-action action to v0.6.2 ([#159](https://github.com/starship/rust-battery/pull/159))
+- *(deps)* update release-plz/action action to v0.5.131 ([#156](https://github.com/starship/rust-battery/pull/156))
+- *(deps)* update rust crate serde to 1.0.229 ([#153](https://github.com/starship/rust-battery/pull/153))
+- *(deps)* pin dependencies ([#160](https://github.com/starship/rust-battery/pull/160))
+- fix clippy lints ([#164](https://github.com/starship/rust-battery/pull/164))
+- *(deps)* update zizmorcore/zizmor-action action to v0.5.7 ([#151](https://github.com/starship/rust-battery/pull/151))
+- *(deps)* update taiki-e/install-action action to v2.82.7
+
 ## [0.11.1](https://github.com/starship/rust-battery/compare/v0.11.0...v0.11.1) - 2026-07-05
 
 ### Fixed
