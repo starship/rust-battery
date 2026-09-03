@@ -27,6 +27,13 @@ pub struct DeviceIterator {
     current: u32,
 }
 
+fn is_absent_battery_error(err: Foundation::WIN32_ERROR) -> bool {
+    matches!(
+        err,
+        Foundation::ERROR_NO_SUCH_DEVICE | Foundation::ERROR_FILE_NOT_FOUND
+    )
+}
+
 impl DeviceIterator {
     pub fn new() -> io::Result<DeviceIterator> {
         let hdev = unsafe {
@@ -139,7 +146,10 @@ impl DeviceIterator {
         }
     }
 
-    fn get_tag(&self, handle: &mut Handle) -> io::Result<systempower::BATTERY_QUERY_INFORMATION> {
+    fn get_tag(
+        &self,
+        handle: &mut Handle,
+    ) -> io::Result<Option<systempower::BATTERY_QUERY_INFORMATION>> {
         let mut query = unsafe { mem::zeroed::<systempower::BATTERY_QUERY_INFORMATION>() };
         let mut wait_timeout: u32 = 0;
         let mut bytes_returned: u32 = 0;
@@ -158,12 +168,21 @@ impl DeviceIterator {
             )
         };
 
-        query.BatteryTag = battery_tag;
-        if res == 0 || query.BatteryTag == 0 {
-            return Err(io::Error::last_os_error());
+        if res == 0 {
+            let err = unsafe { Foundation::GetLastError() };
+            return match is_absent_battery_error(err) {
+                true => Ok(None),
+                false => Err(io::Error::from_raw_os_error(err as i32)),
+            };
         }
 
-        Ok(query)
+        query.BatteryTag = battery_tag;
+        if query.BatteryTag == systempower::BATTERY_TAG_INVALID {
+            // The call succeeded, but reported that the bay is empty.
+            return Ok(None);
+        }
+
+        Ok(Some(query))
     }
 
     pub fn prepare_handle(&self) -> io::Result<Handle> {
@@ -178,16 +197,24 @@ impl iter::Iterator for DeviceIterator {
     type Item = DeviceHandle;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut handle = self.prepare_handle().ok()?;
-        let tag = self.get_tag(&mut handle).ok()?;
+        loop {
+            let mut handle = self.prepare_handle().ok()?;
+            // Advance past this interface index before querying its tag, so that
+            // an empty bay is skipped rather than queried again on the next loop.
+            self.current += 1;
 
-        self.current += 1;
-
-        Some(DeviceHandle {
-            //            interface_details: interface_detail_data,
-            handle,
-            tag,
-        })
+            match self.get_tag(&mut handle).ok()? {
+                Some(tag) => {
+                    return Some(DeviceHandle {
+                        //            interface_details: interface_detail_data,
+                        handle,
+                        tag,
+                    });
+                }
+                // Empty bay: no battery present at this index, keep looking.
+                None => continue,
+            }
+        }
     }
 }
 
