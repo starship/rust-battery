@@ -1,3 +1,4 @@
+use std::ffi::CStr;
 use std::fs;
 use std::os::fd::AsRawFd;
 use std::ptr::{addr_of_mut, null_mut, NonNull};
@@ -72,12 +73,12 @@ pub fn get_system_envsys_plist() -> Result<plist::Dictionary, Error> {
 /// libprop externalizes the dictionary as a C string and reports its length
 /// *including* the terminating NUL (`pref_len = strlen(buf) + 1`, see
 /// `common/lib/libprop/prop_kern.c`). Since plist 1.7.4 the XML reader
-/// rejects any non-whitespace after the closing `</plist>`, so the NUL has to
-/// come off before parsing or every battery on NetBSD reads as
-/// "Problem while processing plist".
+/// rejects any non-whitespace after the closing `</plist>`, so the buffer is
+/// read as the C string it is, or every battery on NetBSD reads as
+/// "Problem while processing plist". A buffer with no NUL is parsed whole.
 fn parse_envsys_plist(bytes: &[u8]) -> Result<plist::Dictionary, Error> {
-    let end = bytes.iter().rposition(|b| *b != 0).map_or(0, |i| i + 1);
-    Ok(plist::from_bytes(&bytes[..end])?)
+    let document = CStr::from_bytes_until_nul(bytes).map_or(bytes, CStr::to_bytes);
+    Ok(plist::from_bytes(document)?)
 }
 
 #[cfg(test)]
