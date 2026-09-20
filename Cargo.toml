@@ -16,7 +16,7 @@ description = "Cross-platform information about the notebook batteries"
 config-schema = ["schemars", "serde"]
 
 [dependencies]
-cfg-if = "1.0.4"
+cfg-if = "1.0.5"
 num-traits = { version = "0.2.19", default-features = false }
 schemars = { version = "1.2.2", optional = true }
 serde = { version = "1.0.229", features = ["derive"], optional = true }
