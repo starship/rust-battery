@@ -31,7 +31,7 @@ jobs:
           rustup toolchain install stable --profile minimal --no-self-update
           rustup default stable
       - name: Run release-plz
-        uses: release-plz/action@346832d73e3415c2ebd0432cba3a2bf5881e5f7d # v0.5.135
+        uses: release-plz/action@8e61445f0b34e7c6d985255f2f1f05a36eb350dc # v0.5.137
         with:
           command: release
         env:
@@ -58,7 +58,7 @@ jobs:
           rustup toolchain install stable --profile minimal --no-self-update
           rustup default stable
       - name: Run release-plz
-        uses: release-plz/action@346832d73e3415c2ebd0432cba3a2bf5881e5f7d # v0.5.135
+        uses: release-plz/action@8e61445f0b34e7c6d985255f2f1f05a36eb350dc # v0.5.137
         with:
           command: release-pr
         env:
