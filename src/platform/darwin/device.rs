@@ -61,6 +61,24 @@ impl BatteryDevice for IoKitDevice {
             _ if self.source.is_charging() => State::Charging,
             _ if self.source.current_capacity().is_zero() => State::Empty,
             _ if self.source.fully_charged() => State::Full,
+            // Darwin does not have an API to query paused status in battery charging:
+            //
+            // - if there is an external source,
+            // - we're not charging
+            // - no current is being drawn from/sent to the battery
+            //
+            // we assume we're paused.
+            //
+            // NOTE(poliorcetics): I've seen `time_remaining` being 1000+ hours in that situation,
+            // but I do not know if that's a reliable value or not so no explicit check for it has
+            // been added. If the current check proves unreliable, maybe add a condition like
+            // `time_remaining > 1000h`
+            _ if self.source.external_connected()
+                && !self.source.is_charging()
+                && self.source.amperage() == milliampere!(0) =>
+            {
+                State::Paused
+            }
             _ => State::Unknown,
         }
     }
