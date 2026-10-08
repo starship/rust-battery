@@ -197,6 +197,8 @@ impl<'p> DataBuilder<'p> {
                 None => {
                     match fs::get::<f32, _>(self.root.join("current_now"))? {
                         Some(current_now) => {
+                            // Some drivers report a negative value while discharging
+                            let current_now = current_now.abs();
                             // If charge_full exists, then current_now is always reported in µA.
                             // In the legacy case, where energy only units exist, and power_now isn't present
                             // current_now is power in µW.
