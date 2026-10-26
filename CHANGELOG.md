@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.1](https://github.com/starship/rust-battery/compare/v0.12.0...v0.12.1) - 2026-10-26
+
+### Other
+
+- *(deps)* update zizmorcore/zizmor-action action to v0.7.1 ([#180](https://github.com/starship/rust-battery/pull/180))
+- *(deps)* update taiki-e/install-action action to v2.87.30 ([#179](https://github.com/starship/rust-battery/pull/179))
+- *(deps)* update swatinem/rust-cache action to v2.9.3 ([#178](https://github.com/starship/rust-battery/pull/178))
+- *(deps)* update release-plz/action action to v0.5.144
+- *(deps)* update rust crate plist to ~1.10.3
+- *(deps)* update rust crate plist to ~1.10.2
+- *(deps)* update rust crate libc to v0.2.191
+- *(deps)* update taiki-e/install-action action to v2.87.28 ([#177](https://github.com/starship/rust-battery/pull/177))
+- *(deps)* update release-plz/action action to v0.5.142
+- *(deps)* update rust crate schemars to 1.2.3
+- *(deps)* update taiki-e/install-action action to v2.87.26 ([#176](https://github.com/starship/rust-battery/pull/176))
+- *(deps)* update release-plz/action action to v0.5.140
+- *(deps)* update rust crate libc to v0.2.190
+- *(deps)* update taiki-e/install-action action to v2.87.22
+- *(deps)* update taiki-e/install-action action to v2.87.19 ([#174](https://github.com/starship/rust-battery/pull/174))
+- *(deps)* update release-plz/action action to v0.5.139
+
 ## [0.12.0](https://github.com/starship/rust-battery/compare/v0.11.1...v0.12.0) - 2026-09-27
 
 ### Added
