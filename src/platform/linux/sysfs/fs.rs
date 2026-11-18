@@ -62,6 +62,9 @@ pub fn voltage<T: AsRef<Path>>(path: T) -> Result<Option<ElectricPotential>> {
 }
 
 /// Read µW value from the `power_` file and convert into `Power` type.
+///
+/// Some drivers report a negative value while discharging,
+/// so only the magnitude is used.
 pub fn power<T: AsRef<Path>>(path: T) -> Result<Option<Power>> {
     let path = path.as_ref();
     debug_assert!(path
@@ -70,7 +73,7 @@ pub fn power<T: AsRef<Path>>(path: T) -> Result<Option<Power>> {
         .to_string_lossy()
         .starts_with("power_"));
 
-    match get::<f32, _>(path) {
+    match get::<f32, _>(path).map(|value| value.map(f32::abs)) {
         Ok(Some(value_uw)) if value_uw > 10_000.0 => Ok(Some(microwatt!(value_uw))),
         Ok(Some(_)) => Ok(None),
         Ok(None) => Ok(None),
